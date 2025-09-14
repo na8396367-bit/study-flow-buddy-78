@@ -24,9 +24,9 @@ export function SessionBlock({ session, task, course, onComplete, onSnooze }: Se
 
   if (isBreak) {
     return (
-      <Card className="p-3 bg-muted/50 border-dashed">
+      <Card className="p-3 bg-muted/50 border-dashed hover:scale-105 transition-transform ease-bounce">
         <div className="flex items-center gap-2 text-muted-foreground">
-          <Coffee className="w-4 h-4" />
+          <Coffee className="w-4 h-4 animate-float" />
           <span className="font-medium">{startTime} - {endTime}</span>
           <span className="text-sm">Break ({duration}m)</span>
         </div>
@@ -36,18 +36,20 @@ export function SessionBlock({ session, task, course, onComplete, onSnooze }: Se
 
   if (isMeal) {
     return (
-      <Card className="p-3 bg-accent-soft/30 border-accent/30">
+      <Card className="p-3 bg-accent-soft/30 border-accent/30 hover:scale-105 transition-transform ease-bounce">
         <div className="flex items-center gap-2 text-accent">
           <span className="font-medium">{startTime} - {endTime}</span>
-          <span className="text-sm">Meal Time</span>
+          <span className="text-sm">🍽️ Meal</span>
         </div>
       </Card>
     );
   }
 
   return (
-    <Card className={`group p-3 transition-all duration-200 border-l-4 cursor-pointer ${
-      isCompleted ? 'bg-muted/30 opacity-75' : 'hover:scale-[1.01]'
+    <Card className={`group p-3 transition-all duration-300 border-l-4 cursor-pointer transform ${
+      isCompleted 
+        ? 'bg-muted/30 opacity-75 animate-bounce-in' 
+        : 'hover:scale-105 hover:shadow-hover ease-bounce'
     }`} style={{ borderLeftColor: course.color }}
           onClick={() => !isCompleted && onComplete?.(session.id)}>
       <div className="flex items-center justify-between mb-2">
@@ -56,7 +58,7 @@ export function SessionBlock({ session, task, course, onComplete, onSnooze }: Se
           <span className="text-xs text-muted-foreground">({duration}m)</span>
         </div>
         {isCompleted && (
-          <Check className="w-4 h-4 text-accent" />
+          <Check className="w-4 h-4 text-accent animate-bounce-in" />
         )}
       </div>
 
@@ -65,20 +67,20 @@ export function SessionBlock({ session, task, course, onComplete, onSnooze }: Se
         <p className="text-xs text-muted-foreground">{course.name}</p>
       </div>
 
-      <p className="text-xs text-muted-foreground/80">{session.tip}</p>
+      <p className="text-xs text-muted-foreground/80">💡 {session.tip}</p>
 
       {!isCompleted && (
-        <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="mt-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
           <Button 
             size="sm" 
             onClick={(e) => {
               e.stopPropagation();
               onComplete?.(session.id);
             }}
-            className="w-full text-xs py-1 h-7"
+            className="w-full text-xs py-1 h-7 hover:shadow-glow hover:scale-105 transition-all ease-bounce"
           >
             <Check className="w-3 h-3 mr-1" />
-            Complete
+            Done
           </Button>
         </div>
       )}

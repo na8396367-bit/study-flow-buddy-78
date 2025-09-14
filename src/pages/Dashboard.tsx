@@ -112,11 +112,11 @@ export default function Dashboard() {
       <div className="min-h-screen bg-gradient-calm flex items-center justify-center">
         <div className="max-w-2xl mx-auto px-6 text-center">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-foreground mb-4">
-              Welcome to StudyFlow ✨
+            <h1 className="text-4xl font-bold text-foreground mb-4 animate-float">
+              StudyFlow ✨
             </h1>
             <p className="text-lg text-muted-foreground mb-8">
-              Feeling overwhelmed? Let's turn your assignments into a calm, doable plan.
+              Stressed? Let's make it easy.
             </p>
           </div>
 
@@ -127,8 +127,8 @@ export default function Dashboard() {
                   1
                 </div>
                 <div className="text-left">
-                  <h3 className="font-semibold text-foreground">Add your assignments</h3>
-                  <p className="text-sm text-muted-foreground">Tell us what you need to study and when it's due</p>
+                  <h3 className="font-semibold text-foreground">Add tasks</h3>
+                  <p className="text-sm text-muted-foreground">What's due when?</p>
                 </div>
               </div>
 
@@ -137,8 +137,8 @@ export default function Dashboard() {
                   2
                 </div>
                 <div className="text-left">
-                  <h3 className="font-semibold text-foreground">Get your personalized plan</h3>
-                  <p className="text-sm text-muted-foreground">We'll create a realistic schedule with breaks included</p>
+                  <h3 className="font-semibold text-foreground">Get your plan</h3>
+                  <p className="text-sm text-muted-foreground">Smart schedule with breaks</p>
                 </div>
               </div>
 
@@ -147,18 +147,18 @@ export default function Dashboard() {
                   3
                 </div>
                 <div className="text-left">
-                  <h3 className="font-semibold text-foreground">Follow your plan</h3>
-                  <p className="text-sm text-muted-foreground">Check off sessions as you complete them</p>
+                  <h3 className="font-semibold text-foreground">Follow & complete</h3>
+                  <p className="text-sm text-muted-foreground">Check off as you go</p>
                 </div>
               </div>
 
               <Button 
                 size="lg" 
                 onClick={() => setShowAddTask(true)}
-                className="w-full bg-gradient-focus hover:bg-gradient-focus/90 text-lg py-6"
+                className="w-full bg-gradient-focus hover:bg-gradient-focus/90 hover:shadow-glow hover:scale-105 transform transition-all duration-300 text-lg py-6 animate-pulse-glow"
               >
                 <Plus className="w-5 h-5 mr-2" />
-                Add Your First Assignment
+                Start Here!
               </Button>
             </div>
           </Card>
@@ -194,10 +194,13 @@ export default function Dashboard() {
           {/* Tasks Section */}
           <div>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold">Your Assignments</h2>
-              <Button onClick={() => setShowAddTask(true)} className="bg-gradient-focus hover:bg-gradient-focus/90">
+              <h2 className="text-xl font-semibold">Tasks</h2>
+              <Button 
+                onClick={() => setShowAddTask(true)} 
+                className="bg-gradient-focus hover:bg-gradient-focus/90 hover:shadow-hover hover:scale-110 transform transition-all ease-bounce"
+              >
                 <Plus className="w-4 h-4 mr-2" />
-                Add Assignment
+                Add
               </Button>
             </div>
 
@@ -225,14 +228,19 @@ export default function Dashboard() {
               })}
               
               {openTasks.length === 0 && !showAddTask && (
-                <Card className="p-8 text-center bg-background/60 backdrop-blur-sm border-0">
-                  <Sparkles className="w-16 h-16 mx-auto mb-4 text-accent" />
+                <Card className="p-8 text-center bg-background/60 backdrop-blur-sm border-0 animate-bounce-in">
+                  <Sparkles className="w-16 h-16 mx-auto mb-4 text-accent animate-float" />
                   <h3 className="text-xl font-semibold mb-2">All done! 🎉</h3>
                   <p className="text-muted-foreground mb-6">
-                    You've completed all your assignments. Take a break or add new ones.
+                    Take a break or add more tasks
                   </p>
-                  <Button onClick={() => setShowAddTask(true)} variant="outline" size="lg">
-                    Add Another Assignment
+                  <Button 
+                    onClick={() => setShowAddTask(true)} 
+                    variant="outline" 
+                    size="lg"
+                    className="hover:shadow-hover hover:scale-105 transform transition-all ease-bounce"
+                  >
+                    Add More
                   </Button>
                 </Card>
               )}
@@ -242,7 +250,7 @@ export default function Dashboard() {
           {/* Plan Section */}
           <div>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold">Today's Plan</h2>
+              <h2 className="text-xl font-semibold">Today</h2>
             </div>
 
             <div className="space-y-4">
@@ -273,15 +281,19 @@ export default function Dashboard() {
                   );
                 })
               ) : openTasks.length > 0 ? (
-                <Card className="p-8 text-center bg-background/60 backdrop-blur-sm border-0">
-                  <Calendar className="w-16 h-16 mx-auto mb-4 text-accent" />
-                  <h3 className="text-xl font-semibold mb-2">Ready for your plan?</h3>
+                <Card className="p-8 text-center bg-background/60 backdrop-blur-sm border-0 animate-bounce-in">
+                  <Calendar className="w-16 h-16 mx-auto mb-4 text-accent animate-float" />
+                  <h3 className="text-xl font-semibold mb-2">Ready?</h3>
                   <p className="text-muted-foreground mb-6">
-                    Let's create a personalized study schedule that works for you.
+                    Let's create your plan
                   </p>
-                  <Button onClick={generatePlan} size="lg" className="bg-gradient-focus hover:bg-gradient-focus/90">
+                  <Button 
+                    onClick={generatePlan} 
+                    size="lg" 
+                    className="bg-gradient-focus hover:bg-gradient-focus/90 hover:shadow-glow hover:scale-110 transform transition-all ease-bounce animate-pulse-glow"
+                  >
                     <Sparkles className="w-5 h-5 mr-2" />
-                    Create My Study Plan
+                    Create Plan
                   </Button>
                 </Card>
               ) : (
@@ -289,7 +301,7 @@ export default function Dashboard() {
                   <Calendar className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
                   <h3 className="text-xl font-semibold mb-2">No plan yet</h3>
                   <p className="text-muted-foreground">
-                    Add your assignments first, then we'll create your study plan.
+                    Add tasks first
                   </p>
                 </Card>
               )}
