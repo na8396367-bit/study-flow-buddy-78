@@ -2,80 +2,62 @@ import { Task, Course } from "@/types";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, BookOpen, AlertCircle } from "lucide-react";
+import { Clock, Check } from "lucide-react";
 import { format } from "date-fns";
 
 interface TaskCardProps {
   task: Task;
   course: Course;
-  onEdit?: (task: Task) => void;
   onComplete?: (taskId: string) => void;
 }
 
-const PRIORITY_STYLES = {
-  low: "border-muted text-muted-foreground",
-  medium: "border-accent text-accent",
-  high: "border-destructive text-destructive"
+const PRIORITY_COLORS = {
+  low: "bg-muted text-muted-foreground",
+  medium: "bg-accent/20 text-accent",
+  high: "bg-destructive/20 text-destructive"
 };
 
-const DIFFICULTY_DOTS = {
-  1: "●",
-  2: "●●", 
-  3: "●●●",
-  4: "●●●●",
-  5: "●●●●●"
-};
-
-export function TaskCard({ task, course, onEdit, onComplete }: TaskCardProps) {
+export function TaskCard({ task, course, onComplete }: TaskCardProps) {
   const isOverdue = task.dueAt < new Date() && task.status === 'open';
   const dueDate = format(task.dueAt, "MMM d, h:mm a");
 
   return (
-    <Card className="p-4 shadow-soft hover:shadow-card transition-all duration-300 border-l-4" 
-          style={{ borderLeftColor: course.color }}>
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <h3 className="font-semibold text-foreground mb-1">{task.title}</h3>
-          <p className="text-sm text-muted-foreground">{course.name}</p>
+    <Card className="group p-4 transition-all duration-200 hover:scale-[1.02] cursor-pointer" 
+          onClick={() => task.status === 'open' && onComplete?.(task.id)}>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-3">
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: course.color }} />
+          <div>
+            <h3 className="font-medium text-foreground">{task.title}</h3>
+            <p className="text-xs text-muted-foreground">{course.name}</p>
+          </div>
         </div>
-        <Badge variant={task.status === 'done' ? 'secondary' : 'outline'} 
-               className={task.status === 'open' ? PRIORITY_STYLES[task.priority] : ''}>
+        <Badge className={`text-xs px-2 py-0.5 ${PRIORITY_COLORS[task.priority]}`}>
           {task.priority}
         </Badge>
       </div>
       
-      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-        <div className="flex items-center gap-1">
-          <Clock className="w-4 h-4" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <Clock className="w-3 h-3" />
           <span>{task.estHours}h</span>
         </div>
-        <div className="flex items-center gap-1">
-          <BookOpen className="w-4 h-4" />
-          <span>{task.type.replace('-', ' ')}</span>
-        </div>
-        <div className="font-mono text-xs">
-          {DIFFICULTY_DOTS[task.difficulty]}
+        <div className={`text-xs ${isOverdue ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
+          Due {dueDate}
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className={`text-sm ${isOverdue ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
-          {isOverdue && <AlertCircle className="w-4 h-4 inline mr-1" />}
-          Due {dueDate}
+      {task.status === 'open' && (
+        <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Button size="sm" className="w-full" onClick={(e) => {
+            e.stopPropagation();
+            onComplete?.(task.id);
+          }}>
+            <Check className="w-3 h-3 mr-1" />
+            Complete
+          </Button>
         </div>
-        <div className="flex gap-2">
-          {onEdit && (
-            <Button variant="ghost" size="sm" onClick={() => onEdit(task)}>
-              Edit
-            </Button>
-          )}
-          {task.status === 'open' && onComplete && (
-            <Button variant="outline" size="sm" onClick={() => onComplete(task.id)}>
-              Complete
-            </Button>
-          )}
-        </div>
-      </div>
+      )}
     </Card>
   );
 }

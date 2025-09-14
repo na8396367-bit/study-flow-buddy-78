@@ -117,51 +117,31 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <Card className="p-4 bg-gradient-primary text-primary-foreground">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-primary-foreground/80 text-sm">Open Tasks</p>
-                <p className="text-2xl font-bold">{openTasks.length}</p>
-              </div>
-              <Calendar className="w-8 h-8 opacity-80" />
+        {/* Quick Stats */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-foreground">{openTasks.length}</div>
+            <div className="text-xs text-muted-foreground">tasks</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-foreground">{todaySessions.length}</div>
+            <div className="text-xs text-muted-foreground">sessions today</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-foreground">
+              {openTasks.reduce((sum, task) => sum + task.estHours, 0)}h
             </div>
-          </Card>
-          
-          <Card className="p-4 shadow-soft">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-muted-foreground text-sm">Today's Sessions</p>
-                <p className="text-2xl font-bold">{todaySessions.length}</p>
-              </div>
-              <Badge variant="secondary" className="text-xs">
-                {completedToday} done
-              </Badge>
-            </div>
-          </Card>
-
-          <Card className="p-4 shadow-soft">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-muted-foreground text-sm">Total Study Hours</p>
-                <p className="text-2xl font-bold">
-                  {openTasks.reduce((sum, task) => sum + task.estHours, 0)}h
-                </p>
-              </div>
-              <Sparkles className="w-8 h-8 text-accent" />
-            </div>
-          </Card>
+            <div className="text-xs text-muted-foreground">to study</div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Tasks Section */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Your Tasks</h2>
-              <Button onClick={() => setShowAddTask(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Task
+              <h2 className="text-lg font-medium">Tasks</h2>
+              <Button size="sm" onClick={() => setShowAddTask(true)}>
+                <Plus className="w-4 h-4" />
               </Button>
             </div>
 
@@ -206,15 +186,14 @@ export default function Dashboard() {
           {/* Plan Section */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Today's Plan</h2>
+              <h2 className="text-lg font-medium">Today</h2>
               {openTasks.length > 0 && (
                 <Button 
+                  size="sm"
                   onClick={generatePlan}
                   variant={hasGeneratedPlan ? "outline" : "default"}
-                  className="bg-gradient-focus hover:bg-gradient-focus/90"
                 >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  {hasGeneratedPlan ? "Regenerate Plan" : "Generate Plan"}
+                  <Sparkles className="w-4 h-4" />
                 </Button>
               )}
             </div>

@@ -46,45 +46,39 @@ export function SessionBlock({ session, task, course, onComplete, onSnooze }: Se
   }
 
   return (
-    <Card className={`p-4 shadow-soft transition-all duration-300 border-l-4 ${
-      isCompleted ? 'bg-muted/30 opacity-75' : 'hover:shadow-card'
-    }`} style={{ borderLeftColor: course.color }}>
-      <div className="flex items-start justify-between mb-2">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-semibold text-sm">{startTime} - {endTime}</span>
-            <Badge variant="secondary" className="text-xs">{duration}m</Badge>
-          </div>
-          <h3 className="font-medium text-foreground">{task.title}</h3>
-          <p className="text-sm text-muted-foreground">{course.name}</p>
+    <Card className={`group p-3 transition-all duration-200 border-l-4 cursor-pointer ${
+      isCompleted ? 'bg-muted/30 opacity-75' : 'hover:scale-[1.01]'
+    }`} style={{ borderLeftColor: course.color }}
+          onClick={() => !isCompleted && onComplete?.(session.id)}>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <span className="font-medium text-sm">{startTime}</span>
+          <span className="text-xs text-muted-foreground">({duration}m)</span>
         </div>
         {isCompleted && (
-          <Check className="w-5 h-5 text-accent" />
+          <Check className="w-4 h-4 text-accent" />
         )}
       </div>
 
-      <div className="mb-3">
-        <div className="text-sm font-medium text-primary mb-1">{session.method}</div>
-        <p className="text-sm text-muted-foreground">{session.tip}</p>
+      <div className="mb-1">
+        <h3 className="font-medium text-sm text-foreground">{task.title}</h3>
+        <p className="text-xs text-muted-foreground">{course.name}</p>
       </div>
 
+      <p className="text-xs text-muted-foreground/80">{session.tip}</p>
+
       {!isCompleted && (
-        <div className="flex gap-2">
+        <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <Button 
-            variant="outline" 
             size="sm" 
-            onClick={() => onComplete?.(session.id)}
-            className="flex-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              onComplete?.(session.id);
+            }}
+            className="w-full text-xs py-1 h-7"
           >
-            <Check className="w-4 h-4 mr-1" />
-            Done
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => onSnooze?.(session.id)}
-          >
-            Snooze 30m
+            <Check className="w-3 h-3 mr-1" />
+            Complete
           </Button>
         </div>
       )}
