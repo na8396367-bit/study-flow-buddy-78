@@ -26,7 +26,7 @@ export function TaskCard({ task, course, onComplete }: TaskCardProps) {
           onClick={() => task.status === 'open' && onComplete?.(task.id)}>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3">
-          <div className="w-3 h-3 rounded-full animate-pulse" style={{ backgroundColor: course.color }} />
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: course.color }} />
           <div>
             <h3 className="font-medium text-foreground">{task.title}</h3>
             <p className="text-xs text-muted-foreground">{course.name}</p>

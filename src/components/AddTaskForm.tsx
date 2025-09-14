@@ -52,7 +52,7 @@ export function AddTaskForm({ courses, onAddTask, onClose }: AddTaskFormProps) {
   };
 
   return (
-    <Card className="p-4 shadow-soft animate-bounce-in">
+    <Card className="p-4 shadow-soft">&gt;
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
           <Input
@@ -73,7 +73,7 @@ export function AddTaskForm({ courses, onAddTask, onClose }: AddTaskFormProps) {
               {courses.map((course) => (
                 <SelectItem key={course.id} value={course.id}>
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: course.color }} />
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: course.color }} />
                     {course.name}
                   </div>
                 </SelectItem>

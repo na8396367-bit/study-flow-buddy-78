@@ -8,49 +8,54 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* StudyFlow Design System - Calm Productivity */
-    --background: 220 15% 97%;
-    --foreground: 220 25% 15%;
+    /* StudyFlow Design System - Cool Blue */
+    --background: 220 30% 12%;
+    --foreground: 220 15% 92%;
 
-    --card: 220 10% 99%;
-    --card-foreground: 220 25% 15%;
+    --card: 220 25% 15%;
+    --card-foreground: 220 15% 92%;
 
-    --popover: 220 10% 99%;
-    --popover-foreground: 220 25% 15%;
+    --popover: 220 25% 15%;
+    --popover-foreground: 220 15% 92%;
 
-    /* Serene blue primary */
-    --primary: 210 85% 45%;
-    --primary-foreground: 210 10% 98%;
-    --primary-glow: 210 85% 65%;
+    /* Cool blue primary */
+    --primary: 220 90% 60%;
+    --primary-foreground: 220 10% 98%;
+    --primary-glow: 220 80% 70%;
 
-    /* Soft secondary */
-    --secondary: 210 20% 92%;
-    --secondary-foreground: 220 25% 25%;
+    /* Cool secondary */
+    --secondary: 220 20% 20%;
+    --secondary-foreground: 220 15% 85%;
 
     /* Muted backgrounds */
-    --muted: 220 15% 94%;
-    --muted-foreground: 220 15% 45%;
+    --muted: 220 20% 18%;
+    --muted-foreground: 220 15% 65%;
 
-    /* Focus accent */
-    --accent: 150 60% 50%;
-    --accent-foreground: 150 10% 98%;
-    --accent-soft: 150 40% 90%;
+    /* Blue accent */
+    --accent: 200 100% 65%;
+    --accent-foreground: 200 10% 98%;
+    --accent-soft: 200 60% 85%;
 
-    /* Gentle warning */
+    /* Warning */
     --destructive: 0 75% 55%;
     --destructive-foreground: 0 10% 98%;
 
-    /* Calm borders */
-    --border: 220 15% 88%;
-    --input: 220 15% 92%;
-    --ring: 210 85% 45%;
+    /* Cool borders */
+    --border: 220 20% 25%;
+    --input: 220 20% 22%;
+    --ring: 220 90% 60%;
 
     --radius: 0.75rem;
 
     /* StudyFlow gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
     --gradient-calm: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
-    --gradient-focus: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-soft)));
+    --gradient-focus: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary)));
+    
+    /* StudyFlow shadows */
+    --shadow-soft: 0 2px 12px -4px hsl(var(--primary) / 0.2);
+    --shadow-card: 0 4px 20px -8px hsl(var(--primary) / 0.25);
+    --shadow-focus: 0 0 0 3px hsl(var(--primary) / 0.3);
     
     /* StudyFlow shadows */
     --shadow-soft: 0 2px 12px -4px hsl(var(--primary) / 0.1);
