@@ -112,47 +112,19 @@ export default function Dashboard() {
       <div className="min-h-screen bg-gradient-calm flex items-center justify-center">
         <div className="max-w-2xl mx-auto px-6 text-center">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-foreground mb-4">
-              StudyFlow ✨
+            <h1 className="text-4xl font-bold text-foreground mb-8">
+              Clarity
             </h1>
-            <p className="text-lg text-muted-foreground mb-8">
-              Let's make it easy.
-            </p>
           </div>
 
-          <Card className="p-8 bg-background/80 backdrop-blur-sm border-0 shadow-card">
-            <div className="space-y-6">
-              <div className="flex items-center gap-4 p-4 bg-accent/10 rounded-lg">
-                <div className="text-left">
-                  <h3 className="font-semibold text-foreground">Add tasks</h3>
-                  <p className="text-sm text-muted-foreground">What's due when?</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-                <div className="text-left">
-                  <h3 className="font-semibold text-foreground">Get your plan</h3>
-                  <p className="text-sm text-muted-foreground">Smart schedule with breaks</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-                <div className="text-left">
-                  <h3 className="font-semibold text-foreground">Follow & complete</h3>
-                  <p className="text-sm text-muted-foreground">Check off as you go</p>
-                </div>
-              </div>
-
-              <Button 
-                size="lg" 
-                onClick={() => setShowAddTask(true)}
-                className="shine-button w-full bg-gradient-focus hover:bg-gradient-focus/90 hover:shadow-glow hover:scale-105 transform transition-all duration-300 text-lg py-6"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Start Here!
-              </Button>
-            </div>
-          </Card>
+          <Button 
+            size="lg" 
+            onClick={() => setShowAddTask(true)}
+            className="shine-button bg-gradient-focus hover:bg-gradient-focus/90 hover:shadow-glow hover:scale-105 transform transition-all duration-300 text-lg py-6 px-12"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Start Here!
+          </Button>
 
           {showAddTask && (
             <div className="mt-8">
@@ -174,10 +146,10 @@ export default function Dashboard() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            StudyFlow
+            Clarity
           </h1>
           <p className="text-muted-foreground">
-            Your personalized study plan 📚
+            Your personalized study plan
           </p>
         </div>
 
