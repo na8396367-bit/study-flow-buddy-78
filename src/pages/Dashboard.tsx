@@ -6,7 +6,8 @@ import { SequentialTaskForm } from "@/components/SequentialTaskForm";
 import { ScheduleSettings } from "@/components/ScheduleSettings";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Plus, Calendar, Settings, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Calendar, Settings, Sparkles, RefreshCw, AlertCircle } from "lucide-react";
 import { generateIntelligentSchedule, getDefaultEnhancedPreferences, EnhancedUserPreferences } from "@/lib/timezone-scheduler";
 import { format, isToday, addDays } from "date-fns";
 
@@ -23,6 +24,7 @@ export default function Dashboard() {
   const [showAddTask, setShowAddTask] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [hasGeneratedPlan, setHasGeneratedPlan] = useState(false);
+  const [planNeedsUpdate, setPlanNeedsUpdate] = useState(false);
   const [userPreferences, setUserPreferences] = useState<EnhancedUserPreferences>(getDefaultEnhancedPreferences());
 
   const openTasks = tasks.filter(t => t.status === 'open');
@@ -35,6 +37,11 @@ export default function Dashboard() {
     };
     setTasks([...tasks, newTask]);
     setShowAddTask(false);
+    
+    // Mark plan as needing update
+    if (hasGeneratedPlan) {
+      setPlanNeedsUpdate(true);
+    }
   };
 
   const handleAddCourse = (courseData: Omit<Course, 'id'>) => {
@@ -49,6 +56,11 @@ export default function Dashboard() {
     setTasks(tasks.map(t => 
       t.id === taskId ? { ...t, status: 'done' as const } : t
     ));
+    
+    // Mark plan as needing update
+    if (hasGeneratedPlan) {
+      setPlanNeedsUpdate(true);
+    }
   };
 
   const handleCompleteSession = (sessionId: string) => {
@@ -61,6 +73,7 @@ export default function Dashboard() {
     const result = generateIntelligentSchedule(tasks, userPreferences, 7);
     setSessions(result.sessions);
     setHasGeneratedPlan(true);
+    setPlanNeedsUpdate(false);
     
     // Show feedback to user
     if (result.suggestions.length > 0) {
@@ -72,12 +85,17 @@ export default function Dashboard() {
     console.log(`Scheduled ${result.coverage.toFixed(0)}% of total task hours`);
   };
 
+  const updatePlan = () => {
+    generatePlan();
+  };
+
   const handleSaveSettings = (newPreferences: EnhancedUserPreferences) => {
     setUserPreferences(newPreferences);
-    // Regenerate plan if it exists
+    // Automatically regenerate plan if it exists
     if (hasGeneratedPlan) {
       const result = generateIntelligentSchedule(tasks, newPreferences, 7);
       setSessions(result.sessions);
+      setPlanNeedsUpdate(false);
     }
   };
 
@@ -137,16 +155,36 @@ export default function Dashboard() {
           {/* Plan Section */}
           <div>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold">Plan</h2>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setShowSettings(true)}
-                className="gap-2"
-              >
-                <Settings className="w-4 h-4" />
-                Settings
-              </Button>
+              <div className="flex items-center gap-3">
+                <h2 className="text-xl font-semibold">Plan</h2>
+                {planNeedsUpdate && (
+                  <Badge variant="secondary" className="gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    Needs Update
+                  </Badge>
+                )}
+              </div>
+              <div className="flex gap-2">
+                {hasGeneratedPlan && planNeedsUpdate && (
+                  <Button 
+                    onClick={updatePlan}
+                    size="sm" 
+                    className="gap-2"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Update Plan
+                  </Button>
+                )}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShowSettings(true)}
+                  className="gap-2"
+                >
+                  <Settings className="w-4 h-4" />
+                  Settings
+                </Button>
+              </div>
             </div>
 
             <div className="space-y-4">
@@ -185,9 +223,9 @@ export default function Dashboard() {
               ) : openTasks.length > 0 ? (
                 <Card className="p-8 text-center bg-background/60 backdrop-blur-sm border-0">
                   <Calendar className="w-16 h-16 mx-auto mb-4 text-accent" />
-                  <h3 className="text-xl font-semibold mb-2">Ready?</h3>
+                  <h3 className="text-xl font-semibold mb-2">Ready to Plan?</h3>
                   <p className="text-muted-foreground mb-6">
-                    Let's create your plan
+                    Create an optimized schedule for all your tasks considering priorities, deadlines, and constraints
                   </p>
                   <Button 
                     onClick={generatePlan} 
@@ -195,7 +233,7 @@ export default function Dashboard() {
                     className="bg-gradient-focus hover:bg-gradient-focus/90 hover:shadow-glow hover:scale-110 transform transition-all ease-bounce"
                   >
                     <Sparkles className="w-5 h-5 mr-2" />
-                    Create Plan
+                    Create Intelligent Plan
                   </Button>
                 </Card>
               ) : (
