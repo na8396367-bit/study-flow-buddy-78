@@ -3,6 +3,7 @@ import { Task, Course, PlanSession, UserPreferences, AvailabilityWindow } from "
 import { TaskCard } from "@/components/TaskCard";
 import { SessionBlock } from "@/components/SessionBlock";
 import { AddTaskForm } from "@/components/AddTaskForm";
+import { SequentialTaskForm } from "@/components/SequentialTaskForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -137,14 +138,12 @@ export default function Dashboard() {
             </div>
 
             {showAddTask && (
-              <div className="mb-6">
-                <AddTaskForm
-                  courses={courses}
-                  onAddTask={handleAddTask}
-                  onAddCourse={handleAddCourse}
-                  onClose={() => setShowAddTask(false)}
-                />
-              </div>
+              <SequentialTaskForm
+                courses={courses}
+                onAddTask={handleAddTask}
+                onAddCourse={handleAddCourse}
+                onClose={() => setShowAddTask(false)}
+              />
             )}
 
             <div className="space-y-4">
