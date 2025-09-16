@@ -265,7 +265,7 @@ export function SequentialTaskForm({ courses, onAddTask, onAddCourse, onClose }:
                 disabled={!currentStepData.isValid()}
                 className="text-primary hover:text-primary/80 disabled:text-muted-foreground/30 transition-colors text-sm font-light"
               >
-                continue
+                →
               </button>
             )}
           </div>
