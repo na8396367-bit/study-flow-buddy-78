@@ -3,7 +3,7 @@ import { Task, Course } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowRight, ArrowLeft, Check, Plus } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 
 interface SequentialTaskFormProps {
   courses: Course[];
@@ -85,8 +85,8 @@ export function SequentialTaskForm({ courses, onAddTask, onAddCourse, onClose }:
         <Input
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          placeholder="Enter your task..."
-          className="text-center text-lg border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-muted-foreground/50"
+          placeholder="Type here..."
+          className="text-center text-xl font-light border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-muted-foreground/30 w-full"
           autoFocus
           onKeyDown={(e) => e.key === 'Enter' && formData.title && handleNext()}
         />
@@ -96,50 +96,47 @@ export function SequentialTaskForm({ courses, onAddTask, onAddCourse, onClose }:
     {
       question: "Which course is this for?",
       component: showAddCourse ? (
-        <div className="space-y-4">
+        <div className="space-y-6">
           <Input
-            placeholder="Course name"
+            placeholder="Type course name..."
             value={newCourseName}
             onChange={(e) => setNewCourseName(e.target.value)}
-            className="text-center text-lg border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-muted-foreground/50"
+            className="text-center text-xl font-light border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-muted-foreground/30"
             onKeyDown={(e) => e.key === 'Enter' && newCourseName && handleAddCourse()}
             autoFocus
           />
-          <div className="flex gap-2 justify-center">
-            <Button onClick={handleAddCourse} size="sm" disabled={!newCourseName.trim()}>
-              <Check className="w-4 h-4" />
-            </Button>
-            <Button onClick={() => setShowAddCourse(false)} variant="ghost" size="sm">
-              Cancel
-            </Button>
+          <div className="flex justify-center space-x-6">
+            <button onClick={handleAddCourse} disabled={!newCourseName.trim()} className="text-primary/70 hover:text-primary disabled:text-muted-foreground/30 text-sm font-light">
+              add course
+            </button>
+            <button onClick={() => setShowAddCourse(false)} className="text-muted-foreground/50 hover:text-muted-foreground text-sm font-light">
+              cancel
+            </button>
           </div>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           <Select value={formData.courseId} onValueChange={(value) => setFormData({ ...formData, courseId: value })}>
-            <SelectTrigger className="text-center border-0 bg-transparent focus:ring-0 focus:outline-none">
-              <SelectValue placeholder="Select a course" />
+            <SelectTrigger className="text-center text-xl font-light border-0 bg-transparent focus:ring-0 focus:outline-none">
+              <SelectValue placeholder="Choose..." />
             </SelectTrigger>
             <SelectContent>
               {courses.map((course) => (
                 <SelectItem key={course.id} value={course.id}>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: course.color }} />
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: course.color }} />
                     {course.name}
                   </div>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Button
+          <button
             onClick={() => setShowAddCourse(true)}
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground/70 hover:text-foreground"
+            className="text-muted-foreground/40 hover:text-muted-foreground/70 text-sm font-light"
           >
-            <Plus className="w-3 h-3 mr-2" />
-            Add new course
-          </Button>
+            + new course
+          </button>
         </div>
       ),
       isValid: () => formData.courseId !== '' || showAddCourse
@@ -153,8 +150,8 @@ export function SequentialTaskForm({ courses, onAddTask, onAddCourse, onClose }:
           min="0.5"
           value={formData.estHours}
           onChange={(e) => setFormData({ ...formData, estHours: e.target.value })}
-          placeholder="e.g. 2.5"
-          className="text-center text-lg border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-muted-foreground/50"
+          placeholder="2.5"
+          className="text-center text-xl font-light border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-muted-foreground/30 w-32 mx-auto"
           autoFocus
           onKeyDown={(e) => e.key === 'Enter' && formData.estHours && handleNext()}
         />
@@ -168,7 +165,7 @@ export function SequentialTaskForm({ courses, onAddTask, onAddCourse, onClose }:
           type="date"
           value={formData.dueDate}
           onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-          className="text-center text-lg border-0 bg-transparent focus:ring-0 focus:outline-none"
+          className="text-center text-xl font-light border-0 bg-transparent focus:ring-0 focus:outline-none w-48 mx-auto"
           min={new Date().toISOString().split('T')[0]}
           autoFocus
           onKeyDown={(e) => e.key === 'Enter' && formData.dueDate && handleNext()}
@@ -180,13 +177,13 @@ export function SequentialTaskForm({ courses, onAddTask, onAddCourse, onClose }:
       question: "How important is this?",
       component: (
         <Select value={formData.priority} onValueChange={(value) => setFormData({ ...formData, priority: value as Task['priority'] })}>
-          <SelectTrigger className="text-center border-0 bg-transparent focus:ring-0 focus:outline-none">
-            <SelectValue placeholder="Select priority" />
+          <SelectTrigger className="text-center text-xl font-light border-0 bg-transparent focus:ring-0 focus:outline-none w-48 mx-auto">
+            <SelectValue placeholder="Choose..." />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="low">Low priority</SelectItem>
-            <SelectItem value="medium">Medium priority</SelectItem>
-            <SelectItem value="high">High priority</SelectItem>
+            <SelectItem value="low">low priority</SelectItem>
+            <SelectItem value="medium">medium priority</SelectItem>
+            <SelectItem value="high">high priority</SelectItem>
           </SelectContent>
         </Select>
       ),
@@ -196,15 +193,15 @@ export function SequentialTaskForm({ courses, onAddTask, onAddCourse, onClose }:
       question: "How difficult is this task?",
       component: (
         <Select value={formData.difficulty} onValueChange={(value) => setFormData({ ...formData, difficulty: value })}>
-          <SelectTrigger className="text-center border-0 bg-transparent focus:ring-0 focus:outline-none">
-            <SelectValue placeholder="Select difficulty" />
+          <SelectTrigger className="text-center text-xl font-light border-0 bg-transparent focus:ring-0 focus:outline-none w-48 mx-auto">
+            <SelectValue placeholder="Choose..." />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="1">Very Easy</SelectItem>
-            <SelectItem value="2">Easy</SelectItem>
-            <SelectItem value="3">Medium</SelectItem>
-            <SelectItem value="4">Hard</SelectItem>
-            <SelectItem value="5">Very Hard</SelectItem>
+            <SelectItem value="1">very easy</SelectItem>
+            <SelectItem value="2">easy</SelectItem>
+            <SelectItem value="3">medium</SelectItem>
+            <SelectItem value="4">hard</SelectItem>
+            <SelectItem value="5">very hard</SelectItem>
           </SelectContent>
         </Select>
       ),
@@ -216,76 +213,62 @@ export function SequentialTaskForm({ courses, onAddTask, onAddCourse, onClose }:
   const isLastStep = currentStep === steps.length - 1;
 
   return (
-    <div className="min-h-screen bg-gradient-calm flex items-center justify-center p-6">
-      <div className="w-full max-w-md space-y-12">
-        {/* Progress indicator */}
-        <div className="flex justify-center">
-          <div className="flex space-x-2">
-            {steps.map((_, index) => (
-              <div
-                key={index}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index <= currentStep ? 'bg-primary' : 'bg-muted-foreground/30'
-                }`}
-              />
-            ))}
+    <div className="fixed inset-0 bg-background z-50 flex items-center justify-center">
+      <div className="w-full max-w-lg px-8">
+        {/* Minimal progress indicator */}
+        <div className="absolute top-8 left-1/2 transform -translate-x-1/2">
+          <div className="text-xs text-muted-foreground/50 font-light">
+            {currentStep + 1} of {steps.length}
           </div>
         </div>
 
-        {/* Question */}
-        <div className="text-center space-y-8">
-          <h2 className="text-2xl font-light text-foreground animate-fade-in">
-            {currentStepData.question}
-          </h2>
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-8 right-8 text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
+        >
+          ×
+        </button>
 
-          {/* Input area */}
-          <div className="animate-fade-in">
+        {/* Question and input */}
+        <div className="text-center space-y-12">
+          <h1 className="text-3xl font-extralight text-foreground/90 leading-relaxed">
+            {currentStepData.question}
+          </h1>
+
+          <div className="w-full">
             {currentStepData.component}
           </div>
-        </div>
 
-        {/* Navigation */}
-        <div className="flex justify-between items-center">
-          <Button
-            onClick={handleBack}
-            variant="ghost"
-            size="sm"
-            className={`transition-opacity duration-300 ${
-              currentStep === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'
-            }`}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
+          {/* Navigation */}
+          <div className="flex justify-center space-x-8 pt-8">
+            {currentStep > 0 && (
+              <button
+                onClick={handleBack}
+                className="text-muted-foreground/50 hover:text-muted-foreground transition-colors text-sm font-light"
+              >
+                back
+              </button>
+            )}
 
-          <Button
-            onClick={onClose}
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground/50 hover:text-muted-foreground"
-          >
-            Cancel
-          </Button>
-
-          {isLastStep ? (
-            <Button
-              onClick={handleSubmit}
-              disabled={!currentStepData.isValid()}
-              className="transition-all duration-300 hover:scale-105"
-            >
-              <Check className="w-4 h-4 mr-2" />
-              Done
-            </Button>
-          ) : (
-            <Button
-              onClick={handleNext}
-              disabled={!currentStepData.isValid()}
-              className="transition-all duration-300 hover:scale-105"
-            >
-              Next
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          )}
+            {isLastStep ? (
+              <button
+                onClick={handleSubmit}
+                disabled={!currentStepData.isValid()}
+                className="text-primary hover:text-primary/80 disabled:text-muted-foreground/30 transition-colors text-sm font-light"
+              >
+                create task
+              </button>
+            ) : (
+              <button
+                onClick={handleNext}
+                disabled={!currentStepData.isValid()}
+                className="text-primary hover:text-primary/80 disabled:text-muted-foreground/30 transition-colors text-sm font-light"
+              >
+                continue
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
