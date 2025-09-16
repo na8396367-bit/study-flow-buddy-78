@@ -72,6 +72,7 @@ export default function Dashboard() {
   const [sessions, setSessions] = useState<PlanSession[]>([]);
   const [showAddTask, setShowAddTask] = useState(false);
   const [hasGeneratedPlan, setHasGeneratedPlan] = useState(false);
+  const [currentScreen, setCurrentScreen] = useState<'welcome' | 'menu'>('welcome');
 
   const openTasks = tasks.filter(t => t.status === 'open');
   const todaySessions = sessions.filter(s => isToday(s.startAt));
@@ -104,10 +105,10 @@ export default function Dashboard() {
     setHasGeneratedPlan(true);
   };
 
-  // First time user experience
-  const isFirstTime = tasks.length === 0 && !hasGeneratedPlan;
+  // Screen navigation
+  const isWelcomeScreen = currentScreen === 'welcome' && tasks.length === 0;
 
-  if (isFirstTime) {
+  if (isWelcomeScreen) {
     return (
       <div className="min-h-screen bg-gradient-calm flex items-center justify-center">
         <div className="max-w-2xl mx-auto px-6 text-center">
@@ -119,22 +120,13 @@ export default function Dashboard() {
 
           <Button 
             size="lg" 
-            onClick={() => setShowAddTask(true)}
+            onClick={() => setCurrentScreen('menu')}
             className="shine-button bg-gradient-focus hover:bg-gradient-focus/90 hover:shadow-glow hover:scale-105 transform transition-all duration-300 text-lg py-6 px-12"
           >
             <Plus className="w-5 h-5 mr-2" />
             Start Here!
           </Button>
 
-          {showAddTask && (
-            <div className="mt-8">
-              <AddTaskForm
-                courses={courses}
-                onAddTask={handleAddTask}
-                onClose={() => setShowAddTask(false)}
-              />
-            </div>
-          )}
         </div>
       </div>
     );
