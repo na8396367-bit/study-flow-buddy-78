@@ -146,7 +146,7 @@ export default function Dashboard() {
               <Button 
                 size="lg" 
                 onClick={() => setShowAddTask(true)}
-                className="w-full bg-gradient-focus hover:bg-gradient-focus/90 hover:shadow-glow hover:scale-105 transform transition-all duration-300 text-lg py-6"
+                className="shine-button w-full bg-gradient-focus hover:bg-gradient-focus/90 hover:shadow-glow hover:scale-105 transform transition-all duration-300 text-lg py-6"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Start Here!
