@@ -71,7 +71,7 @@ export function AddTaskForm({ courses, onAddTask, onAddCourse, onClose }: AddTas
   };
 
   return (
-    <Card className="p-4 shadow-soft">&gt;
+    <Card className="p-4 shadow-soft">
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
           <Input
@@ -145,7 +145,7 @@ export function AddTaskForm({ courses, onAddTask, onAddCourse, onClose }: AddTas
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           <div>
             <Label className="text-sm font-medium text-muted-foreground mb-1 block">Due Date</Label>
             <Input
@@ -153,6 +153,7 @@ export function AddTaskForm({ courses, onAddTask, onAddCourse, onClose }: AddTas
               value={formData.dueDate}
               onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
               className="focus:shadow-glow transition-shadow"
+              min={new Date().toISOString().split('T')[0]}
               required
             />
           </div>
@@ -166,6 +167,21 @@ export function AddTaskForm({ courses, onAddTask, onAddCourse, onClose }: AddTas
                 <SelectItem value="low">Low</SelectItem>
                 <SelectItem value="medium">Medium</SelectItem>
                 <SelectItem value="high">High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-sm font-medium text-muted-foreground mb-1 block">Difficulty (1-5)</Label>
+            <Select value={formData.difficulty} onValueChange={(value) => setFormData({ ...formData, difficulty: value })}>
+              <SelectTrigger className="focus:shadow-glow transition-shadow">
+                <SelectValue placeholder="Select difficulty" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">1 - Very Easy</SelectItem>
+                <SelectItem value="2">2 - Easy</SelectItem>
+                <SelectItem value="3">3 - Medium</SelectItem>
+                <SelectItem value="4">4 - Hard</SelectItem>
+                <SelectItem value="5">5 - Very Hard</SelectItem>
               </SelectContent>
             </Select>
           </div>

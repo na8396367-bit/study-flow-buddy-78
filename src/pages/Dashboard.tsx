@@ -164,17 +164,9 @@ export default function Dashboard() {
                 <Card className="p-8 text-center bg-background/60 backdrop-blur-sm border-0">
                   <Sparkles className="w-16 h-16 mx-auto mb-4 text-accent" />
                   <h3 className="text-xl font-semibold mb-2">All done! 🎉</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Take a break or add more tasks
+                  <p className="text-muted-foreground">
+                    Take a break or add more tasks when you're ready
                   </p>
-                  <Button 
-                    onClick={() => setShowAddTask(true)} 
-                    variant="outline" 
-                    size="lg"
-                    className="hover:shadow-hover hover:scale-105 transform transition-all ease-bounce"
-                  >
-                    Add More
-                  </Button>
                 </Card>
               )}
             </div>
