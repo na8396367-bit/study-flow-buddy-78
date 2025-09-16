@@ -10,12 +10,8 @@ import { Plus, Calendar, AlertTriangle, Sparkles } from "lucide-react";
 import { generateSchedule } from "@/lib/scheduler";
 import { format, isToday, addDays } from "date-fns";
 
-// Sample data for MVP
-const sampleCourses: Course[] = [
-  { id: "1", name: "Biology 101", color: "#22c55e" },
-  { id: "2", name: "Economics", color: "#3b82f6" },
-  { id: "3", name: "History", color: "#f59e0b" }
-];
+// Empty courses array - users will add their own
+const initialCourses: Course[] = [];
 
 const sampleTasks: Task[] = [
   {
@@ -68,7 +64,7 @@ const defaultPreferences: UserPreferences = {
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [courses] = useState<Course[]>(sampleCourses);
+  const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [sessions, setSessions] = useState<PlanSession[]>([]);
   const [showAddTask, setShowAddTask] = useState(false);
   const [hasGeneratedPlan, setHasGeneratedPlan] = useState(false);
@@ -84,6 +80,14 @@ export default function Dashboard() {
     };
     setTasks([...tasks, newTask]);
     setShowAddTask(false);
+  };
+
+  const handleAddCourse = (courseData: Omit<Course, 'id'>) => {
+    const newCourse: Course = {
+      ...courseData,
+      id: Date.now().toString()
+    };
+    setCourses([...courses, newCourse]);
   };
 
   const handleCompleteTask = (taskId: string) => {
@@ -137,6 +141,7 @@ export default function Dashboard() {
                 <AddTaskForm
                   courses={courses}
                   onAddTask={handleAddTask}
+                  onAddCourse={handleAddCourse}
                   onClose={() => setShowAddTask(false)}
                 />
               </div>
