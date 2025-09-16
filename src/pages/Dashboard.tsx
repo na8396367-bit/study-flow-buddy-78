@@ -2,13 +2,12 @@ import { useState, useEffect } from "react";
 import { Task, Course, PlanSession, UserPreferences, AvailabilityWindow } from "@/types";
 import { TaskCard } from "@/components/TaskCard";
 import { SessionBlock } from "@/components/SessionBlock";
-import { AddTaskForm } from "@/components/AddTaskForm";
 import { SequentialTaskForm } from "@/components/SequentialTaskForm";
+import { ScheduleSettings } from "@/components/ScheduleSettings";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Plus, Calendar, AlertTriangle, Sparkles } from "lucide-react";
-import { generateSchedule } from "@/lib/scheduler";
+import { Plus, Calendar, Settings, Sparkles } from "lucide-react";
+import { generateIntelligentSchedule, getDefaultEnhancedPreferences, EnhancedUserPreferences } from "@/lib/timezone-scheduler";
 import { format, isToday, addDays } from "date-fns";
 
 // Empty courses array - users will add their own
@@ -17,7 +16,7 @@ const initialCourses: Course[] = [];
 const sampleTasks: Task[] = [
   {
     id: "1",
-    courseId: "1",
+    courseId: "1", 
     title: "Study Cell Division",
     type: "memorization",
     dueAt: addDays(new Date(), 2),
@@ -39,40 +38,17 @@ const sampleTasks: Task[] = [
   }
 ];
 
-const sampleAvailability: AvailabilityWindow[] = [
-  {
-    id: "1",
-    type: "available",
-    startAt: new Date(new Date().setHours(16, 0, 0, 0)), // 4 PM today
-    endAt: new Date(new Date().setHours(19, 30, 0, 0)), // 7:30 PM today
-    label: "Evening Study"
-  },
-  {
-    id: "2",
-    type: "meal",
-    startAt: new Date(new Date().setHours(18, 30, 0, 0)), // 6:30 PM
-    endAt: new Date(new Date().setHours(19, 0, 0, 0)), // 7 PM
-    label: "Dinner"
-  }
-];
-
-const defaultPreferences: UserPreferences = {
-  blockLengthMinutes: 50,
-  breakLengthMinutes: 10,
-  dayStart: "08:00",
-  dayEnd: "22:00"
-};
-
 export default function Dashboard() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>(sampleTasks);
   const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [sessions, setSessions] = useState<PlanSession[]>([]);
   const [showAddTask, setShowAddTask] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [hasGeneratedPlan, setHasGeneratedPlan] = useState(false);
+  const [userPreferences, setUserPreferences] = useState<EnhancedUserPreferences>(getDefaultEnhancedPreferences());
 
   const openTasks = tasks.filter(t => t.status === 'open');
   const todaySessions = sessions.filter(s => isToday(s.startAt));
-  const completedToday = todaySessions.filter(s => s.status === 'done').length;
 
   const handleAddTask = (taskData: Omit<Task, 'id'>) => {
     const newTask: Task = {
@@ -104,11 +80,28 @@ export default function Dashboard() {
   };
 
   const generatePlan = () => {
-    const result = generateSchedule(tasks, sampleAvailability, defaultPreferences);
+    const result = generateIntelligentSchedule(tasks, userPreferences, 7);
     setSessions(result.sessions);
     setHasGeneratedPlan(true);
+    
+    // Show feedback to user
+    if (result.suggestions.length > 0) {
+      console.log('Scheduling suggestions:', result.suggestions);
+    }
+    if (result.conflicts.length > 0) {
+      console.log('Scheduling conflicts:', result.conflicts);
+    }
+    console.log(`Scheduled ${result.coverage.toFixed(0)}% of total task hours`);
   };
 
+  const handleSaveSettings = (newPreferences: EnhancedUserPreferences) => {
+    setUserPreferences(newPreferences);
+    // Regenerate plan if it exists
+    if (hasGeneratedPlan) {
+      const result = generateIntelligentSchedule(tasks, newPreferences, 7);
+      setSessions(result.sessions);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-calm">
@@ -134,18 +127,13 @@ export default function Dashboard() {
               </Button>
             </div>
 
-            {showAddTask && (
-              <SequentialTaskForm
-                courses={courses}
-                onAddTask={handleAddTask}
-                onAddCourse={handleAddCourse}
-                onClose={() => setShowAddTask(false)}
-              />
-            )}
-
             <div className="space-y-4">
               {openTasks.map(task => {
-                const course = courses.find(c => c.id === task.courseId)!;
+                const course = courses.find(c => c.id === task.courseId) || {
+                  id: task.courseId,
+                  name: 'Unknown Course',
+                  color: '#3b82f6'
+                };
                 return (
                   <TaskCard
                     key={task.id}
@@ -172,6 +160,15 @@ export default function Dashboard() {
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold">Plan</h2>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowSettings(true)}
+                className="gap-2"
+              >
+                <Settings className="w-4 h-4" />
+                Settings
+              </Button>
             </div>
 
             <div className="space-y-4">
@@ -188,8 +185,14 @@ export default function Dashboard() {
                     );
                   }
                   
-                  const task = tasks.find(t => t.id === session.taskId)!;
-                  const course = courses.find(c => c.id === task.courseId)!;
+                  const task = tasks.find(t => t.id === session.taskId);
+                  const course = courses.find(c => c.id === task?.courseId) || {
+                    id: task?.courseId || '',
+                    name: 'Unknown Course',
+                    color: '#3b82f6'
+                  };
+                  
+                  if (!task) return null;
                   
                   return (
                     <SessionBlock
@@ -229,6 +232,24 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* Modals */}
+        {showAddTask && (
+          <SequentialTaskForm
+            courses={courses}
+            onAddTask={handleAddTask}
+            onAddCourse={handleAddCourse}
+            onClose={() => setShowAddTask(false)}
+          />
+        )}
+
+        {showSettings && (
+          <ScheduleSettings
+            preferences={userPreferences}
+            onSave={handleSaveSettings}
+            onClose={() => setShowSettings(false)}
+          />
+        )}
       </div>
     </div>
   );
