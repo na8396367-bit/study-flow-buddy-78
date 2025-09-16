@@ -2,6 +2,7 @@ import { Task, AvailabilityWindow, PlanSession, UserPreferences } from "@/types"
 import { STUDY_METHODS, STUDY_TIPS } from "@/types";
 import { addMinutes, isAfter, isBefore, format, startOfDay, endOfDay, addDays } from "date-fns";
 import { toZonedTime, fromZonedTime, formatInTimeZone } from "date-fns-tz";
+import { createOptimalTaskDistribution, removeAllocatedBlocks, getDailySessionLimit, getEnhancedTip, generateComprehensiveSchedulingSuggestions } from "./scheduling-helpers";
 
 export interface EnhancedUserPreferences extends UserPreferences {
   timezone: string;
@@ -41,27 +42,41 @@ export function generateIntelligentSchedule(
   const conflicts: string[] = [];
   const suggestions: string[] = [];
 
+  if (openTasks.length === 0) {
+    return {
+      sessions: [],
+      conflicts: [],
+      suggestions: ['Add some tasks to get started with your personalized study plan!'],
+      totalPlannedHours: 0,
+      coverage: 100
+    };
+  }
+
   // Generate dynamic availability for the next X days
   const availability = generateDynamicAvailability(now, daysAhead, preferences, userTimezone);
   
   // Create intelligent study blocks
   const studyBlocks = createIntelligentStudyBlocks(availability, preferences, userTimezone);
   
-  // Sort tasks intelligently
+  // Sort tasks intelligently with enhanced priority system
   const sortedTasks = sortTasksIntelligently(openTasks, userTimezone);
   
-  // Allocate sessions with intelligent distribution
-  let totalTaskHours = 0;
+  // Calculate total work needed
+  let totalTaskHours = openTasks.reduce((sum, task) => sum + task.estHours, 0);
   let scheduledHours = 0;
+  let availableBlocks = [...studyBlocks];
 
+  // Smart allocation: distribute tasks across multiple days for better retention
+  const taskDistribution = createOptimalTaskDistribution(sortedTasks, availableBlocks, preferences);
+
+  // Allocate sessions with intelligent distribution
   for (const task of sortedTasks) {
-    totalTaskHours += task.estHours;
-    
     const taskSessions = allocateTaskSessionsIntelligently(
       task, 
-      studyBlocks, 
+      availableBlocks, 
       preferences, 
-      userTimezone
+      userTimezone,
+      taskDistribution[task.id] || { maxSessionsPerDay: 2, preferredDays: [] }
     );
     
     if (taskSessions.length === 0) {
@@ -75,22 +90,15 @@ export function generateIntelligentSchedule(
       return total + (session.endAt.getTime() - session.startAt.getTime()) / (1000 * 60 * 60);
     }, 0);
     
-    // Remove allocated blocks
-    taskSessions.forEach(session => {
-      const blockIndex = studyBlocks.findIndex(block => 
-        block.startAt.getTime() === session.startAt.getTime()
-      );
-      if (blockIndex >= 0) {
-        studyBlocks.splice(blockIndex, 1);
-      }
-    });
+    // Remove allocated blocks more intelligently
+    removeAllocatedBlocks(availableBlocks, taskSessions);
   }
 
   // Add intelligent breaks and meals
   const sessionsWithBreaks = addIntelligentBreaks(sessions, preferences, userTimezone);
   
-  // Generate suggestions
-  generateSchedulingSuggestions(tasks, sessions, preferences, suggestions);
+  // Generate comprehensive suggestions
+  generateComprehensiveSchedulingSuggestions(openTasks, sessions, preferences, suggestions, availableBlocks);
 
   const coverage = totalTaskHours > 0 ? (scheduledHours / totalTaskHours) * 100 : 100;
 
@@ -255,7 +263,8 @@ function allocateTaskSessionsIntelligently(
   task: Task,
   availableBlocks: Array<{ startAt: Date; endAt: Date; priority: number }>,
   preferences: EnhancedUserPreferences,
-  timezone: string
+  timezone: string,
+  distribution: { maxSessionsPerDay: number; preferredDays: number[] } = { maxSessionsPerDay: 2, preferredDays: [] }
 ): PlanSession[] {
   const sessions: PlanSession[] = [];
   const totalMinutesNeeded = task.estHours * 60;
@@ -263,13 +272,24 @@ function allocateTaskSessionsIntelligently(
   
   // Intelligent session distribution
   const optimalSessionLength = Math.min(blockDuration, getOptimalSessionLength(task.type));
-  const maxSessionsPerDay = Math.floor(480 / (optimalSessionLength + preferences.breakLengthMinutes)); // 8 hours max
+  const maxSessionsPerDay = distribution.maxSessionsPerDay;
   
   let remainingMinutes = totalMinutesNeeded;
   let sessionsToday = 0;
   let lastSessionDate = '';
   
-  for (const block of availableBlocks) {
+  // Sort blocks by priority and date for better allocation
+  const sortedBlocks = [...availableBlocks].sort((a, b) => {
+    const dateA = formatInTimeZone(a.startAt, timezone, 'yyyy-MM-dd');
+    const dateB = formatInTimeZone(b.startAt, timezone, 'yyyy-MM-dd');
+    
+    if (dateA !== dateB) {
+      return a.startAt.getTime() - b.startAt.getTime(); // Earlier dates first
+    }
+    return b.priority - a.priority; // Higher priority first within same day
+  });
+  
+  for (const block of sortedBlocks) {
     if (remainingMinutes <= 0) break;
     if (isAfter(block.startAt, task.dueAt)) continue;
     
@@ -281,8 +301,9 @@ function allocateTaskSessionsIntelligently(
       lastSessionDate = currentDate;
     }
     
-    // Limit sessions per day for better learning
-    if (sessionsToday >= maxSessionsPerDay) continue;
+    // Intelligent daily limits based on task type and difficulty
+    const dailyLimit = getDailySessionLimit(task, maxSessionsPerDay);
+    if (sessionsToday >= dailyLimit) continue;
     
     const sessionDuration = Math.min(optimalSessionLength, remainingMinutes, blockDuration);
     const sessionEnd = addMinutes(block.startAt, sessionDuration);
@@ -294,7 +315,7 @@ function allocateTaskSessionsIntelligently(
         startAt: new Date(block.startAt),
         endAt: sessionEnd,
         method: STUDY_METHODS[task.type],
-        tip: getEnhancedTip(task.type, sessions.length + 1),
+        tip: getEnhancedTip(task.type, sessions.length + 1, task.difficulty),
         status: 'planned'
       });
       
@@ -310,31 +331,14 @@ function getOptimalSessionLength(taskType: Task['type']): number {
   const optimalLengths = {
     'reading': 45,
     'problem-set': 60,
-    'essay': 50,
-    'exam-prep': 40,
+    'essay': 90, // Longer for deep work
+    'exam-prep': 50,
     'memorization': 30
   };
   
   return optimalLengths[taskType] || 45;
 }
 
-function getEnhancedTip(taskType: Task['type'], sessionNumber: number): string {
-  const baseTips = STUDY_TIPS[taskType];
-  
-  if (sessionNumber === 1) {
-    return `Session ${sessionNumber}: ${baseTips}`;
-  }
-  
-  const progressTips = {
-    'reading': 'Review previous chapter highlights before starting new material.',
-    'problem-set': 'Start by reviewing errors from previous session.',
-    'essay': 'Review your outline and previous paragraphs before continuing.',
-    'exam-prep': 'Test yourself on yesterday\'s material first.',
-    'memorization': 'Quick review of previous cards before new ones.'
-  };
-  
-  return `Session ${sessionNumber}: ${progressTips[taskType]} Then ${baseTips.toLowerCase()}`;
-}
 
 function addIntelligentBreaks(
   sessions: PlanSession[],

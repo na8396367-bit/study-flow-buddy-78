@@ -13,33 +13,11 @@ import { format, isToday, addDays } from "date-fns";
 // Empty courses array - users will add their own
 const initialCourses: Course[] = [];
 
-const sampleTasks: Task[] = [
-  {
-    id: "1",
-    courseId: "1", 
-    title: "Study Cell Division",
-    type: "memorization",
-    dueAt: addDays(new Date(), 2),
-    estHours: 2,
-    difficulty: 3,
-    priority: "high",
-    status: "open"
-  },
-  {
-    id: "2", 
-    courseId: "2",
-    title: "Supply & Demand Problem Set",
-    type: "problem-set",
-    dueAt: addDays(new Date(), 1),
-    estHours: 3,
-    difficulty: 4,
-    priority: "medium",
-    status: "open"
-  }
-];
+// Start with empty tasks - users add their own
+const initialTasks: Task[] = [];
 
 export default function Dashboard() {
-  const [tasks, setTasks] = useState<Task[]>(sampleTasks);
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [sessions, setSessions] = useState<PlanSession[]>([]);
   const [showAddTask, setShowAddTask] = useState(false);
