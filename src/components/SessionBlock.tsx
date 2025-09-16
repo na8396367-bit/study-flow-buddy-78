@@ -18,8 +18,8 @@ export function SessionBlock({ session, task, course, onComplete, onSnooze }: Se
   const endTime = format(session.endAt, "h:mm a");
   const duration = Math.round((session.endAt.getTime() - session.startAt.getTime()) / (1000 * 60));
   
-  const isBreak = session.method === 'break';
-  const isMeal = session.method === 'meal';
+  const isBreak = session.type === 'break';
+  const isMeal = session.type === 'meal';
   const isCompleted = session.status === 'done';
 
   if (isBreak) {
@@ -67,7 +67,7 @@ export function SessionBlock({ session, task, course, onComplete, onSnooze }: Se
         <p className="text-xs text-muted-foreground">{course.name}</p>
       </div>
 
-      <p className="text-xs text-muted-foreground/80">💡 {session.tip}</p>
+      {session.label && <p className="text-xs text-muted-foreground/80">{session.label}</p>}
 
       {!isCompleted && (
         <div className="mt-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">

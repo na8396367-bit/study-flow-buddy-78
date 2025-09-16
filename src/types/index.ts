@@ -30,9 +30,9 @@ export interface PlanSession {
   taskId: string;
   startAt: Date;
   endAt: Date;
-  method: string;
-  tip: string;
+  type: 'task' | 'break' | 'meal' | 'sleep' | 'unavailable';
   status: 'planned' | 'done' | 'snoozed';
+  label?: string; // For breaks/meals/sleep
 }
 
 export interface UserPreferences {
@@ -42,18 +42,13 @@ export interface UserPreferences {
   dayEnd: string; // "22:00"
 }
 
-export const STUDY_METHODS = {
-  'reading': 'SQ3R Method',
-  'problem-set': 'Worked Examples',
-  'essay': 'Structured Outlining',
-  'exam-prep': 'Active Recall',
-  'memorization': 'Spaced Repetition'
-} as const;
-
-export const STUDY_TIPS = {
-  'reading': 'Survey, Question, Read, Recite, Review. End with 5 retrieval questions.',
-  'problem-set': 'Start with worked examples, then practice independently. Keep an error log.',
-  'essay': 'Create detailed outline first, then write in focused 25-minute sprints.',
-  'exam-prep': 'Use flashcards and practice tests. Mix different topics (interleaving).',
-  'memorization': 'Active recall with flashcards. Review in increasingly spaced intervals.'
-} as const;
+export interface TimeConstraint {
+  id: string;
+  type: 'sleep' | 'meal' | 'work' | 'class' | 'personal' | 'unavailable';
+  startTime: string; // "HH:mm" format
+  endTime: string; // "HH:mm" format  
+  days: number[]; // 0=Sunday, 1=Monday, etc.
+  label: string;
+  isRecurring: boolean;
+  specificDate?: Date; // For one-time constraints
+}

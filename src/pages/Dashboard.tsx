@@ -152,7 +152,7 @@ export default function Dashboard() {
             <div className="space-y-4">
               {todaySessions.length > 0 ? (
                 todaySessions.map(session => {
-                  if (session.method === 'break' || session.method === 'meal') {
+                  if (session.type === 'break' || session.type === 'meal') {
                     return (
                       <SessionBlock
                         key={session.id}
