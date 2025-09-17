@@ -16,7 +16,7 @@ export default function Welcome() {
         <Button 
           size="lg" 
           onClick={() => navigate('/dashboard')}
-          className="bg-gradient-focus hover:brightness-125 hover:shadow-glow hover:scale-110 hover:-translate-y-1 transform transition-all duration-500 ease-spring text-3xl py-12 px-24"
+          className="bg-gradient-focus hover:brightness-125 hover:shadow-glow hover:scale-110 hover:-translate-y-1 transform transition-all duration-500 ease-spring text-4xl py-12 px-24"
         >
           Start Here
         </Button>
