@@ -105,13 +105,18 @@ export function StudySettings({
                 type="number"
                 value={sessionLength}
                 onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '' || (!isNaN(Number(value)) && Number(value) >= 0)) {
+                    onUpdateSessionLength(value === '' ? 0 : parseInt(value));
+                  }
+                }}
+                onBlur={(e) => {
                   const value = parseInt(e.target.value) || 25;
                   const rounded = Math.round(value / 5) * 5;
                   onUpdateSessionLength(Math.max(15, Math.min(120, rounded)));
                 }}
                 min="15"
                 max="120"
-                step="5"
                 className="h-9"
               />
             </div>
@@ -124,13 +129,18 @@ export function StudySettings({
                   type="number"
                   value={breakLength}
                   onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '' || (!isNaN(Number(value)) && Number(value) >= 0)) {
+                      onUpdateBreakLength(value === '' ? 0 : parseInt(value));
+                    }
+                  }}
+                  onBlur={(e) => {
                     const value = parseInt(e.target.value) || 5;
                     const rounded = Math.round(value / 5) * 5;
                     onUpdateBreakLength(Math.max(5, Math.min(30, rounded)));
                   }}
                   min="5"
                   max="30"
-                  step="5"
                   className="h-9"
                 />
               </div>
