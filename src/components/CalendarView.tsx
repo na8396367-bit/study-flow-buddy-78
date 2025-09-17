@@ -64,139 +64,160 @@ export function CalendarView({ sessions, tasks, courses, onCompleteSession }: Ca
     const isBreak = session.type === 'break' || session.type === 'meal';
     
     return (
-      <Card 
-        className={`p-3 mb-2 cursor-pointer transition-all hover:shadow-md ${
-          session.status === 'done' ? 'opacity-60 bg-muted' : ''
-        } ${isBreak ? 'border-l-4 border-accent' : 'border-l-4'}`}
-        style={{ borderLeftColor: course?.color || '#3b82f6' }}
+      <div 
+        className={`flex items-center gap-3 py-2 px-0 cursor-pointer group hover:bg-muted/50 transition-colors rounded-sm ${
+          session.status === 'done' ? 'opacity-60' : ''
+        }`}
         onClick={() => !isBreak && onCompleteSession(session.id)}
       >
-        <div className="flex justify-between items-start">
-          <div className="flex-1">
-            <h4 className="font-medium text-sm">
-              {isBreak ? session.label : task?.title}
-            </h4>
-            {!isBreak && course && (
-              <p className="text-xs text-muted-foreground">{course.name}</p>
-            )}
-            <div className="flex items-center gap-2 mt-1">
+        {/* Time column */}
+        <div className="w-20 text-right">
+          <span className="text-xs text-muted-foreground">
+            {formatTime(session.startAt)}
+          </span>
+        </div>
+        
+        {/* Event bar */}
+        <div 
+          className={`flex-1 border-l-4 pl-3 py-1 rounded-r-sm ${
+            session.status === 'done' ? 'bg-muted/60' : 'bg-card'
+          }`}
+          style={{ 
+            borderLeftColor: course?.color || '#4285f4',
+            backgroundColor: session.status === 'done' ? 'hsl(var(--muted))' : `${course?.color || '#4285f4'}10`
+          }}
+        >
+          <div className="flex justify-between items-center">
+            <div>
+              <h4 className="text-sm font-medium text-foreground">
+                {isBreak ? session.label : task?.title}
+              </h4>
+              {!isBreak && course && (
+                <p className="text-xs text-muted-foreground">{course.name}</p>
+              )}
               <span className="text-xs text-muted-foreground">
                 {formatTime(session.startAt)} - {formatTime(session.endAt)}
               </span>
-              <Badge variant="outline" className="text-xs">
-                {formatDuration(session.startAt, session.endAt)}
-              </Badge>
             </div>
+            {session.status === 'done' && (
+              <span className="text-xs text-muted-foreground">Done</span>
+            )}
           </div>
-          {session.status === 'done' && (
-            <Badge variant="secondary" className="text-xs">Done</Badge>
-          )}
         </div>
-      </Card>
+      </div>
     );
   };
 
   if (viewMode === "day") {
     const daySchedule = getSessionsForDay(currentDate);
     
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h3 className="text-lg font-semibold">
-              {format(currentDate, "EEEE, MMMM d, yyyy")}
-            </h3>
-            {isToday(currentDate) && (
-              <Badge variant="default">Today</Badge>
-            )}
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => navigateDay("prev")}>
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => navigateDay("next")}>
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => setViewMode("week")}>
-              <Maximize2 className="w-4 h-4 mr-1" />
-              Week View
-            </Button>
-          </div>
-        </div>
-
-        <div className="max-h-96 overflow-y-auto space-y-2">
-          {daySchedule.length > 0 ? (
-            daySchedule
-              .sort((a, b) => a.startAt.getTime() - b.startAt.getTime())
-              .map(session => {
-                const task = session.taskId ? getTaskById(session.taskId) : undefined;
-                const course = task ? getCourseById(task.courseId) : undefined;
-                
-                return (
-                  <SessionCard
-                    key={session.id}
-                    session={session}
-                    task={task}
-                    course={course}
-                  />
-                );
-              })
-          ) : (
-            <Card className="p-8 text-center">
-              <Calendar className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-muted-foreground">No sessions planned for this day</p>
-            </Card>
+  return (
+    <div className="space-y-6">
+      {/* Header with clean Google Calendar styling */}
+      <div className="flex items-center justify-between pb-4 border-b border-border">
+        <div className="flex items-center gap-4">
+          <h2 className="text-2xl font-normal text-foreground">
+            {format(currentDate, "EEEE, MMMM d")}
+          </h2>
+          {isToday(currentDate) && (
+            <div className="w-2 h-2 bg-primary rounded-full"></div>
           )}
         </div>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="sm" onClick={() => navigateDay("prev")} className="h-8 w-8 p-0">
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => navigateDay("next")} className="h-8 w-8 p-0">
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+          <div className="w-px h-6 bg-border mx-2"></div>
+          <Button variant="ghost" size="sm" onClick={() => setViewMode("week")} className="text-sm font-normal">
+            Week
+          </Button>
+        </div>
       </div>
-    );
+
+      {/* Calendar grid */}
+      <div className="space-y-0">
+        {daySchedule.length > 0 ? (
+          daySchedule
+            .sort((a, b) => a.startAt.getTime() - b.startAt.getTime())
+            .map(session => {
+              const task = session.taskId ? getTaskById(session.taskId) : undefined;
+              const course = task ? getCourseById(task.courseId) : undefined;
+              
+              return (
+                <SessionCard
+                  key={session.id}
+                  session={session}
+                  task={task}
+                  course={course}
+                />
+              );
+            })
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground text-sm">No events for this day</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">
-          Week of {format(weekStart, "MMMM d, yyyy")}
-        </h3>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigateWeek("prev")}>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between pb-4 border-b border-border">
+        <h2 className="text-2xl font-normal text-foreground">
+          {format(weekStart, "MMMM yyyy")}
+        </h2>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="sm" onClick={() => navigateWeek("prev")} className="h-8 w-8 p-0">
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <Button variant="outline" size="sm" onClick={() => navigateWeek("next")}>
+          <Button variant="ghost" size="sm" onClick={() => navigateWeek("next")} className="h-8 w-8 p-0">
             <ChevronRight className="w-4 h-4" />
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setViewMode("day")}>
-            <Minimize2 className="w-4 h-4 mr-1" />
-            Day View
+          <div className="w-px h-6 bg-border mx-2"></div>
+          <Button variant="ghost" size="sm" onClick={() => setViewMode("day")} className="text-sm font-normal">
+            Day
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-2">
+      {/* Week grid */}
+      <div className="grid grid-cols-7 gap-px bg-border rounded-lg overflow-hidden">
         {weekDays.map(day => {
           const daySessions = getSessionsForDay(day);
           const isCurrentDay = isToday(day);
           
           return (
-            <Card 
+            <div 
               key={day.toISOString()} 
-              className={`p-3 min-h-32 cursor-pointer transition-all hover:shadow-md ${
-                isCurrentDay ? 'ring-2 ring-primary' : ''
+              className={`bg-background p-3 min-h-32 cursor-pointer hover:bg-muted/50 transition-colors ${
+                isCurrentDay ? 'bg-primary/5' : ''
               }`}
               onClick={() => {
                 setCurrentDate(day);
                 setViewMode("day");
               }}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">
+              {/* Day header */}
+              <div className="flex flex-col items-center mb-3">
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">
                   {format(day, "EEE")}
                 </span>
-                <span className={`text-sm ${isCurrentDay ? 'font-bold text-primary' : 'text-muted-foreground'}`}>
+                <span className={`text-lg ${
+                  isCurrentDay 
+                    ? 'bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center text-sm font-medium' 
+                    : 'text-foreground'
+                }`}>
                   {format(day, "d")}
                 </span>
               </div>
               
+              {/* Events */}
               <div className="space-y-1">
                 {daySessions.slice(0, 3).map(session => {
                   const task = session.taskId ? getTaskById(session.taskId) : undefined;
@@ -206,25 +227,26 @@ export function CalendarView({ sessions, tasks, courses, onCompleteSession }: Ca
                   return (
                     <div
                       key={session.id}
-                      className={`text-xs p-1 rounded truncate ${
+                      className={`text-xs p-1.5 rounded text-white truncate ${
                         session.status === 'done' ? 'opacity-60' : ''
                       }`}
                       style={{ 
-                        backgroundColor: course?.color ? `${course.color}20` : '#3b82f620',
-                        borderLeft: `2px solid ${course?.color || '#3b82f6'}`
+                        backgroundColor: course?.color || '#4285f4'
                       }}
                     >
-                      {isBreak ? session.label : task?.title}
+                      <div className="font-medium">
+                        {formatTime(session.startAt)} {isBreak ? session.label : task?.title}
+                      </div>
                     </div>
                   );
                 })}
                 {daySessions.length > 3 && (
-                  <div className="text-xs text-muted-foreground">
-                    +{daySessions.length - 3} more
+                  <div className="text-xs text-muted-foreground pl-1.5">
+                    {daySessions.length - 3} more
                   </div>
                 )}
               </div>
-            </Card>
+            </div>
           );
         })}
       </div>

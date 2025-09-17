@@ -22,7 +22,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          glow: "hsl(var(--primary-glow))",
+          hover: "hsl(var(--primary-hover))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -66,11 +66,9 @@ export default {
         'gradient-focus': 'var(--gradient-focus)',
       },
       boxShadow: {
-        'soft': 'var(--shadow-soft)',
+        'subtle': 'var(--shadow-subtle)',
         'card': 'var(--shadow-card)',
-        'focus': 'var(--shadow-focus)',
         'hover': 'var(--shadow-hover)',
-        'glow': 'var(--shadow-glow)',
       },
       transitionTimingFunction: {
         'smooth': 'var(--transition-smooth)',

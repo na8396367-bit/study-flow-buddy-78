@@ -132,127 +132,131 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-calm">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground">
-            Clarity
-          </h1>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto">
+        {/* Google Calendar style header */}
+        <div className="border-b border-border px-6 py-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-normal text-foreground">
+              Clarity
+            </h1>
+            <Button 
+              onClick={() => setShowAddTask(true)} 
+              className="bg-primary hover:bg-primary-hover text-primary-foreground font-medium rounded-full px-6"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create
+            </Button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Tasks Section */}
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold">Tasks</h2>
-              <Button 
-                onClick={() => setShowAddTask(true)} 
-                className="bg-gradient-focus hover:bg-gradient-focus/90 hover:shadow-hover hover:scale-110 transform transition-all ease-bounce"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add
-              </Button>
-            </div>
-
-            <div className="space-y-4">
-              {openTasks.map(task => {
-                const course = courses.find(c => c.id === task.courseId) || {
-                  id: task.courseId,
-                  name: 'Unknown Course',
-                  color: '#3b82f6'
-                };
-                return (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    course={course}
-                    onComplete={handleCompleteTask}
-                  />
-                );
-              })}
-              
-              {openTasks.length === 0 && !showAddTask && (
-                <Card className="p-8 text-center bg-background/60 backdrop-blur-sm border-0">
-                  <Sparkles className="w-16 h-16 mx-auto mb-4 text-accent" />
-                  <h3 className="text-xl font-semibold mb-2">All done! 🎉</h3>
-                  <p className="text-muted-foreground">
-                    Take a break or add more tasks when you're ready
-                  </p>
-                </Card>
-              )}
+        <div className="flex">
+          {/* Sidebar for tasks */}
+          <div className="w-80 border-r border-border h-screen overflow-y-auto">
+            <div className="p-6">
+              <div className="mb-6">
+                <h2 className="text-lg font-medium text-foreground mb-4">Tasks</h2>
+                <div className="space-y-2">
+                  {openTasks.map(task => {
+                    const course = courses.find(c => c.id === task.courseId) || {
+                      id: task.courseId,
+                      name: 'Unknown Course',
+                      color: '#4285f4'
+                    };
+                    return (
+                      <TaskCard
+                        key={task.id}
+                        task={task}
+                        course={course}
+                        onComplete={handleCompleteTask}
+                      />
+                    );
+                  })}
+                  
+                  {openTasks.length === 0 && (
+                    <div className="py-8 text-center">
+                      <Sparkles className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                      <h3 className="text-lg font-medium mb-2">All caught up!</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Add new tasks to get started
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Plan Section */}
-          <div>
+          {/* Main calendar area */}
+          <div className="flex-1 p-6">
             <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <h2 className="text-xl font-semibold">Plan</h2>
+              <div className="flex items-center gap-4">
                 {planNeedsUpdate && (
-                  <Badge variant="secondary" className="gap-1">
-                    <AlertCircle className="w-3 h-3" />
-                    Needs Update
-                  </Badge>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <AlertCircle className="w-4 h-4" />
+                    Plan needs update
+                  </div>
                 )}
               </div>
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2">
                 {hasGeneratedPlan && planNeedsUpdate && (
                   <Button 
                     onClick={updatePlan}
                     size="sm" 
+                    variant="ghost"
                     className="gap-2"
                   >
                     <RefreshCw className="w-4 h-4" />
-                    Update Plan
+                    Refresh
                   </Button>
                 )}
                 <Button 
-                  variant="outline" 
+                  variant="ghost" 
                   size="sm" 
                   onClick={() => setShowAvailability(true)}
                   className="gap-2"
                 >
                   <Clock className="w-4 h-4" />
-                  Availability
+                  Settings
                 </Button>
               </div>
             </div>
 
-            <div className="space-y-4">
-              {hasGeneratedPlan && sessions.length > 0 ? (
-                <CalendarView
-                  sessions={sessions}
-                  tasks={tasks}
-                  courses={courses}
-                  onCompleteSession={handleCompleteSession}
-                />
-              ) : openTasks.length > 0 ? (
-                <Card className="p-8 text-center bg-background/60 backdrop-blur-sm border-0">
-                  <Calendar className="w-16 h-16 mx-auto mb-4 text-accent" />
-                  <h3 className="text-xl font-semibold mb-2">Ready to Plan?</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Create an optimized schedule for all your tasks considering priorities, deadlines, and constraints
+            {hasGeneratedPlan && sessions.length > 0 ? (
+              <CalendarView
+                sessions={sessions}
+                tasks={tasks}
+                courses={courses}
+                onCompleteSession={handleCompleteSession}
+              />
+            ) : openTasks.length > 0 ? (
+              <div className="flex items-center justify-center h-96">
+                <div className="text-center">
+                  <Calendar className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-xl font-medium mb-2">Ready to schedule?</h3>
+                  <p className="text-muted-foreground mb-6 max-w-md">
+                    Generate an intelligent plan that automatically schedules your tasks based on priorities and deadlines.
                   </p>
                   <Button 
                     onClick={generatePlan} 
-                    size="lg" 
-                    className="bg-gradient-focus hover:bg-gradient-focus/90 hover:shadow-glow hover:scale-110 transform transition-all ease-bounce"
+                    className="bg-primary hover:bg-primary-hover text-primary-foreground font-medium rounded-full px-6"
                   >
-                    <Sparkles className="w-5 h-5 mr-2" />
-                    Create Intelligent Plan
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Generate Schedule
                   </Button>
-                </Card>
-              ) : (
-                <Card className="p-8 text-center bg-background/60 backdrop-blur-sm border-0">
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-96">
+                <div className="text-center">
                   <Calendar className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-xl font-semibold mb-2">No plan yet</h3>
+                  <h3 className="text-xl font-medium mb-2">No schedule yet</h3>
                   <p className="text-muted-foreground">
-                    Add tasks first
+                    Add some tasks to get started
                   </p>
-                </Card>
-              )}
-            </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

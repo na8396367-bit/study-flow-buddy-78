@@ -8,71 +8,51 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* StudyFlow Design System - White Background with Blue Accents */
+    /* Google Calendar inspired clean design */
     --background: 0 0% 100%;
-    --foreground: 220 15% 15%;
+    --foreground: 0 0% 20%;
 
-    --card: 0 0% 98%;
-    --card-foreground: 220 15% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 15%;
+    --popover-foreground: 0 0% 20%;
 
-    /* Cool blue primary */
-    --primary: 220 90% 60%;
+    /* Google Calendar blue */
+    --primary: 210 100% 56%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 220 80% 70%;
+    --primary-hover: 210 100% 50%;
 
-    /* Cool secondary */
-    --secondary: 220 15% 95%;
-    --secondary-foreground: 220 15% 25%;
+    /* Clean secondary */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 40%;
 
-    /* Muted backgrounds */
-    --muted: 220 10% 96%;
-    --muted-foreground: 220 15% 45%;
+    /* Minimal muted backgrounds */
+    --muted: 0 0% 97%;
+    --muted-foreground: 0 0% 50%;
 
-    /* Blue accent */
-    --accent: 200 100% 65%;
+    /* Subtle accent */
+    --accent: 210 100% 56%;
     --accent-foreground: 0 0% 100%;
-    --accent-soft: 200 60% 95%;
 
-    /* Warning */
-    --destructive: 0 75% 55%;
+    /* Clean destructive */
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Cool borders */
-    --border: 220 15% 85%;
-    --input: 220 10% 96%;
-    --ring: 220 90% 60%;
+    /* Google Calendar borders */
+    --border: 0 0% 90%;
+    --input: 0 0% 97%;
+    --ring: 210 100% 56%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    /* StudyFlow gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-calm: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
-    --gradient-focus: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary)));
+    /* Clean Google Calendar shadows */
+    --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     
-    /* StudyFlow shadows */
-    --shadow-soft: 0 2px 12px -4px hsl(var(--primary) / 0.2);
-    --shadow-card: 0 4px 20px -8px hsl(var(--primary) / 0.25);
-    --shadow-focus: 0 0 0 3px hsl(var(--primary) / 0.3);
-    
-    /* StudyFlow shadows */
-    --shadow-soft: 0 2px 12px -4px hsl(var(--primary) / 0.1);
-    --shadow-card: 0 4px 20px -8px hsl(var(--primary) / 0.15);
-    --shadow-focus: 0 0 0 3px hsl(var(--primary) / 0.2);
-    
-    /* StudyFlow animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-spring: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    --transition-bounce: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    
-    /* Enhanced shadows for depth */
-    --shadow-hover: 0 8px 32px -12px hsl(var(--primary) / 0.3);
-    --shadow-glow: 0 0 20px hsl(var(--accent) / 0.4);
-    
-    /* Shine effect */
-    --shine-gradient: linear-gradient(110deg, transparent 25%, hsl(var(--accent-foreground) / 0.8) 50%, transparent 75%);
+    /* Minimal transitions */
+    --transition-smooth: all 0.15s ease;
 
     --sidebar-background: 0 0% 98%;
 
