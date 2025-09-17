@@ -6,9 +6,9 @@ export default function Welcome() {
 
   return (
     <div className="min-h-screen bg-gradient-calm flex items-center justify-center">
-      <div className="max-w-2xl mx-auto px-6 text-center">
-        <div className="mb-20">
-          <h1 className="text-6xl font-bold text-foreground mb-12">
+      <div className="max-w-2xl mx-auto px-6 text-center flex flex-col items-center justify-center">
+        <div className="mb-8">
+          <h1 className="text-6xl font-bold text-foreground mb-8">
             Clarity
           </h1>
         </div>
@@ -16,7 +16,7 @@ export default function Welcome() {
         <Button 
           size="lg" 
           onClick={() => navigate('/dashboard')}
-          className="bg-gradient-focus hover:brightness-125 hover:shadow-glow hover:scale-110 hover:-translate-y-1 transform transition-all duration-500 ease-spring text-4xl py-12 px-24"
+          className="bg-gradient-focus hover:brightness-125 hover:shadow-glow hover:scale-110 hover:-translate-y-1 transform transition-all duration-500 ease-spring text-6xl py-12 px-24"
         >
           Start Here
         </Button>
