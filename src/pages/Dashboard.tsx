@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Task, Course, PlanSession, UserPreferences, AvailabilityWindow } from "@/types";
 import { TaskCard } from "@/components/TaskCard";
 import { SequentialTaskForm } from "@/components/SequentialTaskForm";
-import { AvailabilitySettings } from "@/components/AvailabilitySettings";
+import { StudySettings } from "@/components/StudySettings";
 import { CalendarView } from "@/components/CalendarView";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -29,16 +29,16 @@ export default function Dashboard() {
   const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [sessions, setSessions] = useState<PlanSession[]>([]);
   const [showAddTask, setShowAddTask] = useState(false);
-  const [showAvailability, setShowAvailability] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [hasGeneratedPlan, setHasGeneratedPlan] = useState(false);
-  const [planNeedsUpdate, setPlanNeedsUpdate] = useState(false);
   const [userPreferences, setUserPreferences] = useState<EnhancedUserPreferences>(getDefaultEnhancedPreferences());
   const [availableBlocks, setAvailableBlocks] = useState<TimeBlock[]>([
     { id: '1', startTime: '09:00', endTime: '12:00', label: 'Morning' },
     { id: '2', startTime: '14:00', endTime: '17:00', label: 'Afternoon' }
   ]);
-  const [lunchDuration, setLunchDuration] = useState(30);
-  const [snackDuration, setSnackDuration] = useState(15);
+  const [pomodoroEnabled, setPomodoroEnabled] = useState(true);
+  const [sessionLength, setSessionLength] = useState(45);
+  const [breakLength, setBreakLength] = useState(15);
 
   const openTasks = tasks.filter(t => t.status === 'open');
 
@@ -84,25 +84,46 @@ export default function Dashboard() {
   };
 
   const generateScheduleWithTasks = (tasksToSchedule: Task[]) => {
-    // Update preferences with current availability blocks
+    // Convert available blocks to weekly schedule
+    const baseSchedule = {
+      monday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+      tuesday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+      wednesday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+      thursday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+      friday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+      saturday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+      sunday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] }
+    };
+
+    // Override with available blocks if they exist
+    if (availableBlocks.length > 0) {
+      const earliestStart = availableBlocks.reduce((earliest, block) => 
+        block.startTime < earliest ? block.startTime : earliest, '23:59'
+      );
+      const latestEnd = availableBlocks.reduce((latest, block) => 
+        block.endTime > latest ? block.endTime : latest, '00:00'
+      );
+      
+      Object.keys(baseSchedule).forEach(day => {
+        baseSchedule[day] = {
+          isAvailable: true,
+          startTime: earliestStart,
+          endTime: latestEnd,
+          mealBreaks: []
+        };
+      });
+    }
+
     const updatedPreferences = {
       ...userPreferences,
-      weeklySchedule: {
-        monday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
-        tuesday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
-        wednesday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
-        thursday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
-        friday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
-        saturday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
-        sunday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] }
-      },
-      breakLengthMinutes: snackDuration
+      weeklySchedule: baseSchedule,
+      blockLengthMinutes: sessionLength,
+      breakLengthMinutes: pomodoroEnabled ? breakLength : 0
     };
 
     const result = generateIntelligentSchedule(tasksToSchedule, updatedPreferences, 7);
     setSessions(result.sessions);
     setHasGeneratedPlan(true);
-    setPlanNeedsUpdate(false);
     
     // Show feedback to user
     if (result.suggestions.length > 0) {
@@ -118,22 +139,31 @@ export default function Dashboard() {
     generateScheduleWithTasks(tasks);
   };
 
-  const updatePlan = () => {
-    generatePlan();
-  };
-
-  const handleUpdateAvailability = (blocks: TimeBlock[]) => {
+  const handleUpdateBlocks = (blocks: TimeBlock[]) => {
     setAvailableBlocks(blocks);
-    if (hasGeneratedPlan) {
-      setPlanNeedsUpdate(true);
+    if (hasGeneratedPlan && tasks.length > 0) {
+      setTimeout(() => generateScheduleWithTasks(tasks), 100);
     }
   };
 
-  const handleUpdateBreaks = (lunch: number, snack: number) => {
-    setLunchDuration(lunch);
-    setSnackDuration(snack);
-    if (hasGeneratedPlan) {
-      setPlanNeedsUpdate(true);
+  const handleUpdatePomodoro = (enabled: boolean) => {
+    setPomodoroEnabled(enabled);
+    if (hasGeneratedPlan && tasks.length > 0) {
+      setTimeout(() => generateScheduleWithTasks(tasks), 100);
+    }
+  };
+
+  const handleUpdateSessionLength = (minutes: number) => {
+    setSessionLength(minutes);
+    if (hasGeneratedPlan && tasks.length > 0) {
+      setTimeout(() => generateScheduleWithTasks(tasks), 100);
+    }
+  };
+
+  const handleUpdateBreakLength = (minutes: number) => {
+    setBreakLength(minutes);
+    if (hasGeneratedPlan && tasks.length > 0) {
+      setTimeout(() => generateScheduleWithTasks(tasks), 100);
     }
   };
 
@@ -196,30 +226,12 @@ export default function Dashboard() {
           {/* Main calendar area */}
           <div className="flex-1 p-6">
             <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-4">
-                {planNeedsUpdate && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <AlertCircle className="w-4 h-4" />
-                    Plan needs update
-                  </div>
-                )}
-              </div>
+              <div></div>
               <div className="flex items-center gap-2">
-                {hasGeneratedPlan && planNeedsUpdate && (
-                  <Button 
-                    onClick={updatePlan}
-                    size="sm" 
-                    variant="ghost"
-                    className="gap-2"
-                  >
-                    <RefreshCw className="w-4 h-4" />
-                    Refresh
-                  </Button>
-                )}
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  onClick={() => setShowAvailability(true)}
+                  onClick={() => setShowSettings(true)}
                   className="gap-2"
                 >
                   <Clock className="w-4 h-4" />
@@ -276,24 +288,18 @@ export default function Dashboard() {
           />
         )}
 
-        {showAvailability && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-background p-6 rounded-lg max-w-md w-full mx-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Study Availability</h3>
-                <Button variant="ghost" size="sm" onClick={() => setShowAvailability(false)}>
-                  ×
-                </Button>
-              </div>
-              <AvailabilitySettings
-                availableBlocks={availableBlocks}
-                lunchDuration={lunchDuration}
-                snackDuration={snackDuration}
-                onUpdateAvailability={handleUpdateAvailability}
-                onUpdateBreaks={handleUpdateBreaks}
-              />
-            </div>
-          </div>
+        {showSettings && (
+          <StudySettings
+            availableBlocks={availableBlocks}
+            pomodoroEnabled={pomodoroEnabled}
+            sessionLength={sessionLength}
+            breakLength={breakLength}
+            onUpdateBlocks={handleUpdateBlocks}
+            onUpdatePomodoro={handleUpdatePomodoro}
+            onUpdateSessionLength={handleUpdateSessionLength}
+            onUpdateBreakLength={handleUpdateBreakLength}
+            onClose={() => setShowSettings(false)}
+          />
         )}
       </div>
     </div>
