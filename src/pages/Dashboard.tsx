@@ -47,13 +47,14 @@ export default function Dashboard() {
       ...taskData,
       id: Date.now().toString()
     };
-    setTasks([...tasks, newTask]);
+    const updatedTasks = [...tasks, newTask];
+    setTasks(updatedTasks);
     setShowAddTask(false);
     
-    // Mark plan as needing update
-    if (hasGeneratedPlan) {
-      setPlanNeedsUpdate(true);
-    }
+    // Automatically generate new schedule
+    setTimeout(() => {
+      generateScheduleWithTasks(updatedTasks);
+    }, 100);
   };
 
   const handleAddCourse = (courseData: Omit<Course, 'id'>) => {
@@ -65,14 +66,15 @@ export default function Dashboard() {
   };
 
   const handleCompleteTask = (taskId: string) => {
-    setTasks(tasks.map(t => 
+    const updatedTasks = tasks.map(t => 
       t.id === taskId ? { ...t, status: 'done' as const } : t
-    ));
+    );
+    setTasks(updatedTasks);
     
-    // Mark plan as needing update
-    if (hasGeneratedPlan) {
-      setPlanNeedsUpdate(true);
-    }
+    // Automatically generate new schedule
+    setTimeout(() => {
+      generateScheduleWithTasks(updatedTasks);
+    }, 100);
   };
 
   const handleCompleteSession = (sessionId: string) => {
@@ -81,7 +83,7 @@ export default function Dashboard() {
     ));
   };
 
-  const generatePlan = () => {
+  const generateScheduleWithTasks = (tasksToSchedule: Task[]) => {
     // Update preferences with current availability blocks
     const updatedPreferences = {
       ...userPreferences,
@@ -97,7 +99,7 @@ export default function Dashboard() {
       breakLengthMinutes: snackDuration
     };
 
-    const result = generateIntelligentSchedule(tasks, updatedPreferences, 7);
+    const result = generateIntelligentSchedule(tasksToSchedule, updatedPreferences, 7);
     setSessions(result.sessions);
     setHasGeneratedPlan(true);
     setPlanNeedsUpdate(false);
@@ -110,6 +112,10 @@ export default function Dashboard() {
       console.log('Scheduling conflicts:', result.conflicts);
     }
     console.log(`Scheduled ${result.coverage.toFixed(0)}% of total task hours`);
+  };
+
+  const generatePlan = () => {
+    generateScheduleWithTasks(tasks);
   };
 
   const updatePlan = () => {
@@ -235,14 +241,14 @@ export default function Dashboard() {
                   <Calendar className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
                   <h3 className="text-xl font-medium mb-2">Ready to schedule?</h3>
                   <p className="text-muted-foreground mb-6 max-w-md">
-                    Generate an intelligent plan that automatically schedules your tasks based on priorities and deadlines.
+                    Your tasks will be automatically scheduled when you add them.
                   </p>
                   <Button 
                     onClick={generatePlan} 
                     className="bg-primary hover:bg-primary-hover text-primary-foreground font-medium rounded-full px-6"
                   >
                     <Sparkles className="w-4 h-4 mr-2" />
-                    Generate Schedule
+                    Generate Schedule Now
                   </Button>
                 </div>
               </div>
