@@ -116,10 +116,11 @@ export default function Dashboard() {
               <h2 className="text-xl font-semibold">Tasks</h2>
               <Button 
                 onClick={() => setShowAddTask(true)} 
-                className="bg-gradient-focus hover:bg-gradient-focus/90 hover:shadow-hover hover:scale-110 transform transition-all ease-bounce"
+                size="lg"
+                className="bg-gradient-focus hover:bg-gradient-focus/90 hover:shadow-glow hover:scale-110 transform transition-all ease-bounce text-lg py-6 px-8"
               >
-                <Plus className="w-4 h-4 mr-2" />
-                Add
+                <Plus className="w-5 h-5 mr-3" />
+                Add Your First Task
               </Button>
             </div>
 
