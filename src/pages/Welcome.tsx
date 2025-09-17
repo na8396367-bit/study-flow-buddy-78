@@ -6,8 +6,8 @@ export default function Welcome() {
 
   return (
     <div className="min-h-screen bg-gradient-calm flex items-center justify-center relative">
-      <div className="text-center">
-        <h1 className="text-6xl font-bold text-foreground mb-16">
+      <div className="text-center transform -translate-y-20">
+        <h1 className="text-6xl font-bold text-foreground mb-12">
           Clarity
         </h1>
         
