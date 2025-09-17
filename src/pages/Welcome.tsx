@@ -5,14 +5,12 @@ export default function Welcome() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-calm flex items-center justify-center">
-      <div className="max-w-2xl mx-auto px-6 text-center flex flex-col items-center justify-center">
-        <div className="mb-8">
-          <h1 className="text-6xl font-bold text-foreground mb-8">
-            Clarity
-          </h1>
-        </div>
-
+    <div className="min-h-screen bg-gradient-calm flex items-center justify-center relative">
+      <div className="text-center">
+        <h1 className="text-6xl font-bold text-foreground mb-16">
+          Clarity
+        </h1>
+        
         <Button 
           size="lg" 
           onClick={() => navigate('/dashboard')}
