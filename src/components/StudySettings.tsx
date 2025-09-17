@@ -41,13 +41,29 @@ export function StudySettings({
 
   const addTimeBlock = () => {
     if (newBlock.startTime && newBlock.endTime) {
-      const block: TimeBlock = {
-        id: Date.now().toString(),
-        ...newBlock,
-        label: `${newBlock.startTime} - ${newBlock.endTime}`
+      // Validate time format and round to nearest 5 minutes
+      const validateAndRoundTime = (time: string) => {
+        const [hours, minutes] = time.split(':').map(Number);
+        if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+          return null;
+        }
+        const roundedMinutes = Math.round(minutes / 5) * 5;
+        return `${hours.toString().padStart(2, '0')}:${(roundedMinutes % 60).toString().padStart(2, '0')}`;
       };
-      onUpdateBlocks([...availableBlocks, block]);
-      setNewBlock({ startTime: "", endTime: "" });
+
+      const validStartTime = validateAndRoundTime(newBlock.startTime);
+      const validEndTime = validateAndRoundTime(newBlock.endTime);
+
+      if (validStartTime && validEndTime) {
+        const block: TimeBlock = {
+          id: Date.now().toString(),
+          startTime: validStartTime,
+          endTime: validEndTime,
+          label: `${validStartTime} - ${validEndTime}`
+        };
+        onUpdateBlocks([...availableBlocks, block]);
+        setNewBlock({ startTime: "", endTime: "" });
+      }
     }
   };
 
@@ -68,10 +84,6 @@ export function StudySettings({
         <CardContent className="space-y-6">
           {/* Study Method */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium flex items-center gap-2">
-              <Target className="w-4 h-4" />
-              Study Method
-            </Label>
             <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
               <Switch
                 id="pomodoro"
@@ -80,9 +92,6 @@ export function StudySettings({
               />
               <div className="flex-1">
                 <Label htmlFor="pomodoro" className="font-medium">Pomodoro Technique</Label>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Add breaks between study sessions to improve focus and retention
-                </p>
               </div>
             </div>
           </div>
@@ -95,9 +104,14 @@ export function StudySettings({
                 id="session"
                 type="number"
                 value={sessionLength}
-                onChange={(e) => onUpdateSessionLength(parseInt(e.target.value) || 25)}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value) || 25;
+                  const rounded = Math.round(value / 5) * 5;
+                  onUpdateSessionLength(Math.max(15, Math.min(120, rounded)));
+                }}
                 min="15"
                 max="120"
+                step="5"
                 className="h-9"
               />
             </div>
@@ -109,9 +123,14 @@ export function StudySettings({
                   id="break"
                   type="number"
                   value={breakLength}
-                  onChange={(e) => onUpdateBreakLength(parseInt(e.target.value) || 5)}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value) || 5;
+                    const rounded = Math.round(value / 5) * 5;
+                    onUpdateBreakLength(Math.max(5, Math.min(30, rounded)));
+                  }}
                   min="5"
                   max="30"
+                  step="5"
                   className="h-9"
                 />
               </div>
@@ -120,15 +139,12 @@ export function StudySettings({
 
           {/* Available Time Blocks */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              Available Study Times
-            </Label>
+            <Label className="text-sm font-medium">Available Study Times</Label>
             
             {/* Current blocks */}
-            <div className="flex flex-wrap gap-2 min-h-[2.5rem] p-3 bg-muted/30 rounded-lg">
-              {availableBlocks.length > 0 ? (
-                availableBlocks.map((block) => (
+            {availableBlocks.length > 0 && (
+              <div className="flex flex-wrap gap-2 p-3 bg-muted/30 rounded-lg">
+                {availableBlocks.map((block) => (
                   <Badge 
                     key={block.id} 
                     variant="secondary" 
@@ -142,26 +158,34 @@ export function StudySettings({
                       <X className="w-3 h-3" />
                     </button>
                   </Badge>
-                ))
-              ) : (
-                <p className="text-xs text-muted-foreground">No time blocks added yet</p>
-              )}
-            </div>
+                ))}
+              </div>
+            )}
 
             {/* Add new block */}
             <div className="flex gap-2">
               <Input
-                type="time"
+                type="text"
                 value={newBlock.startTime}
-                onChange={(e) => setNewBlock({ ...newBlock, startTime: e.target.value })}
-                placeholder="Start"
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^\d:]/g, '');
+                  if (value.length <= 5) {
+                    setNewBlock({ ...newBlock, startTime: value });
+                  }
+                }}
+                placeholder="Start (e.g. 9:00)"
                 className="h-9"
               />
               <Input
-                type="time"
+                type="text"
                 value={newBlock.endTime}
-                onChange={(e) => setNewBlock({ ...newBlock, endTime: e.target.value })}
-                placeholder="End"
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^\d:]/g, '');
+                  if (value.length <= 5) {
+                    setNewBlock({ ...newBlock, endTime: value });
+                  }
+                }}
+                placeholder="End (e.g. 17:00)"
                 className="h-9"
               />
               <Button 
