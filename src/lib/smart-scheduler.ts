@@ -262,7 +262,7 @@ function allocateTaskSessions(
   timezone: string
 ): PlanSession[] {
   const sessions: PlanSession[] = [];
-  const totalMinutesNeeded = task.estHours * 60;
+  const totalMinutesNeeded = Math.round(task.estHours * 60); // Round to ensure exact matching
   const optimalSessionLength = getOptimalSessionLength(task.type, task.difficulty);
   
   let remainingMinutes = totalMinutesNeeded;
@@ -307,17 +307,49 @@ function allocateTaskSessions(
     }
   }
   
-  // Ensure allocated sessions sum up to task duration by adjusting final sessions
-  if (sessions.length > 0 && remainingMinutes > 0) {
+  // CRITICAL: Ensure allocated time exactly matches task duration
+  if (sessions.length > 0) {
     const totalAllocated = sessions.reduce((sum, session) => 
-      sum + (session.endAt.getTime() - session.startAt.getTime()) / (1000 * 60), 0
+      sum + Math.round((session.endAt.getTime() - session.startAt.getTime()) / (1000 * 60)), 0
     );
     
-    if (totalAllocated < totalMinutesNeeded) {
-      // Extend the last session to cover remaining time (up to reasonable limit)
-      const lastSession = sessions[sessions.length - 1];
-      const extension = Math.min(remainingMinutes, 30); // Cap extension at 30 minutes
-      lastSession.endAt = addMinutes(lastSession.endAt, extension);
+    const difference = totalMinutesNeeded - totalAllocated;
+    
+    if (difference > 0) {
+      // Need to add more time - extend sessions or add new ones
+      let remainingToAdd = difference;
+      
+      // First, try extending existing sessions within reasonable limits
+      for (let i = sessions.length - 1; i >= 0 && remainingToAdd > 0; i--) {
+        const session = sessions[i];
+        const maxExtension = Math.min(remainingToAdd, 15); // Max 15min extension per session
+        session.endAt = addMinutes(session.endAt, maxExtension);
+        remainingToAdd -= maxExtension;
+      }
+      
+      // If still need time, distribute across all sessions
+      if (remainingToAdd > 0) {
+        const extraPerSession = Math.ceil(remainingToAdd / sessions.length);
+        sessions.forEach(session => {
+          const extension = Math.min(extraPerSession, remainingToAdd);
+          session.endAt = addMinutes(session.endAt, extension);
+          remainingToAdd -= extension;
+        });
+      }
+    } else if (difference < 0) {
+      // Need to reduce time - trim from sessions
+      let remainingToReduce = Math.abs(difference);
+      
+      for (let i = sessions.length - 1; i >= 0 && remainingToReduce > 0; i--) {
+        const session = sessions[i];
+        const currentDuration = Math.round((session.endAt.getTime() - session.startAt.getTime()) / (1000 * 60));
+        const reduction = Math.min(remainingToReduce, Math.max(0, currentDuration - 15)); // Keep min 15min sessions
+        
+        if (reduction > 0) {
+          session.endAt = addMinutes(session.endAt, -reduction);
+          remainingToReduce -= reduction;
+        }
+      }
     }
   }
   

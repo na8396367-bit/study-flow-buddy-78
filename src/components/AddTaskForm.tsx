@@ -23,6 +23,7 @@ export function AddTaskForm({ courses, onAddTask, onAddCourse, onClose }: AddTas
     dueDate: '',
     dueTime: '',
     estHours: '',
+    estMinutes: '',
     difficulty: '3' as string,
     priority: 'medium' as Task['priority'],
     notes: ''
@@ -33,18 +34,19 @@ export function AddTaskForm({ courses, onAddTask, onAddCourse, onClose }: AddTas
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.courseId || !formData.dueDate || !formData.estHours) {
+    if (!formData.title || !formData.courseId || !formData.dueDate || (!formData.estHours && !formData.estMinutes)) {
       return;
     }
 
     const dueAt = new Date(`${formData.dueDate}T${formData.dueTime || '23:59'}`);
+    const totalHours = parseFloat(formData.estHours || '0') + parseFloat(formData.estMinutes || '0') / 60;
     
     onAddTask({
       title: formData.title,
       courseId: formData.courseId,
       type: formData.type,
       dueAt,
-      estHours: parseFloat(formData.estHours),
+      estHours: totalHours,
       difficulty: parseInt(formData.difficulty) as Task['difficulty'],
       priority: formData.priority,
       notes: formData.notes,
@@ -131,17 +133,32 @@ export function AddTaskForm({ courses, onAddTask, onAddCourse, onClose }: AddTas
           </div>
 
           <div>
-            <Label className="text-sm font-medium text-muted-foreground mb-1 block">Estimated Hours</Label>
-            <Input
-              type="number"
-              step="0.5"
-              min="0.5"
-              value={formData.estHours}
-              onChange={(e) => setFormData({ ...formData, estHours: e.target.value })}
-              placeholder="e.g. 2.5"
-              className="focus:shadow-glow transition-shadow"
-              required
-            />
+            <Label className="text-sm font-medium text-muted-foreground mb-1 block">Estimated Time</Label>
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Input
+                  type="number"
+                  min="0"
+                  max="23"
+                  value={formData.estHours}
+                  onChange={(e) => setFormData({ ...formData, estHours: e.target.value })}
+                  placeholder="Hours"
+                  className="focus:shadow-glow transition-shadow"
+                />
+              </div>
+              <div className="flex-1">
+                <Input
+                  type="number"
+                  min="0"
+                  max="59"
+                  step="5"
+                  value={formData.estMinutes}
+                  onChange={(e) => setFormData({ ...formData, estMinutes: e.target.value })}
+                  placeholder="Minutes"
+                  className="focus:shadow-glow transition-shadow"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
