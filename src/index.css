@@ -8,41 +8,41 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* StudyFlow Design System - Cool Blue */
-    --background: 220 30% 12%;
-    --foreground: 220 15% 92%;
+    /* StudyFlow Design System - White Background with Blue Accents */
+    --background: 0 0% 100%;
+    --foreground: 220 15% 15%;
 
-    --card: 220 25% 15%;
-    --card-foreground: 220 15% 92%;
+    --card: 0 0% 98%;
+    --card-foreground: 220 15% 15%;
 
-    --popover: 220 25% 15%;
-    --popover-foreground: 220 15% 92%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 15%;
 
     /* Cool blue primary */
     --primary: 220 90% 60%;
-    --primary-foreground: 220 10% 98%;
+    --primary-foreground: 0 0% 100%;
     --primary-glow: 220 80% 70%;
 
     /* Cool secondary */
-    --secondary: 220 20% 20%;
-    --secondary-foreground: 220 15% 85%;
+    --secondary: 220 15% 95%;
+    --secondary-foreground: 220 15% 25%;
 
     /* Muted backgrounds */
-    --muted: 220 20% 18%;
-    --muted-foreground: 220 15% 65%;
+    --muted: 220 10% 96%;
+    --muted-foreground: 220 15% 45%;
 
     /* Blue accent */
     --accent: 200 100% 65%;
-    --accent-foreground: 200 10% 98%;
-    --accent-soft: 200 60% 85%;
+    --accent-foreground: 0 0% 100%;
+    --accent-soft: 200 60% 95%;
 
     /* Warning */
     --destructive: 0 75% 55%;
-    --destructive-foreground: 0 10% 98%;
+    --destructive-foreground: 0 0% 100%;
 
     /* Cool borders */
-    --border: 220 20% 25%;
-    --input: 220 20% 22%;
+    --border: 220 15% 85%;
+    --input: 220 10% 96%;
     --ring: 220 90% 60%;
 
     --radius: 0.75rem;
