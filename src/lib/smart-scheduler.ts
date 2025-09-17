@@ -307,6 +307,20 @@ function allocateTaskSessions(
     }
   }
   
+  // Ensure allocated sessions sum up to task duration by adjusting final sessions
+  if (sessions.length > 0 && remainingMinutes > 0) {
+    const totalAllocated = sessions.reduce((sum, session) => 
+      sum + (session.endAt.getTime() - session.startAt.getTime()) / (1000 * 60), 0
+    );
+    
+    if (totalAllocated < totalMinutesNeeded) {
+      // Extend the last session to cover remaining time (up to reasonable limit)
+      const lastSession = sessions[sessions.length - 1];
+      const extension = Math.min(remainingMinutes, 30); // Cap extension at 30 minutes
+      lastSession.endAt = addMinutes(lastSession.endAt, extension);
+    }
+  }
+  
   return sessions;
 }
 

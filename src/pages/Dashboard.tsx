@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { Task, Course, PlanSession, UserPreferences, AvailabilityWindow } from "@/types";
 import { TaskCard } from "@/components/TaskCard";
-import { SessionBlock } from "@/components/SessionBlock";
 import { SequentialTaskForm } from "@/components/SequentialTaskForm";
-import { ScheduleSettings } from "@/components/ScheduleSettings";
+import { AvailabilitySettings } from "@/components/AvailabilitySettings";
+import { CalendarView } from "@/components/CalendarView";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Calendar, Settings, Sparkles, RefreshCw, AlertCircle } from "lucide-react";
+import { Plus, Calendar, Sparkles, RefreshCw, AlertCircle, Clock } from "lucide-react";
 import { generateIntelligentSchedule, getDefaultEnhancedPreferences, EnhancedUserPreferences } from "@/lib/timezone-scheduler";
 import { format, isToday, addDays } from "date-fns";
 
@@ -17,18 +17,30 @@ const initialCourses: Course[] = [];
 // Start with empty tasks - users add their own
 const initialTasks: Task[] = [];
 
+interface TimeBlock {
+  id: string;
+  startTime: string;
+  endTime: string;
+  label: string;
+}
+
 export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [sessions, setSessions] = useState<PlanSession[]>([]);
   const [showAddTask, setShowAddTask] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
+  const [showAvailability, setShowAvailability] = useState(false);
   const [hasGeneratedPlan, setHasGeneratedPlan] = useState(false);
   const [planNeedsUpdate, setPlanNeedsUpdate] = useState(false);
   const [userPreferences, setUserPreferences] = useState<EnhancedUserPreferences>(getDefaultEnhancedPreferences());
+  const [availableBlocks, setAvailableBlocks] = useState<TimeBlock[]>([
+    { id: '1', startTime: '09:00', endTime: '12:00', label: 'Morning' },
+    { id: '2', startTime: '14:00', endTime: '17:00', label: 'Afternoon' }
+  ]);
+  const [lunchDuration, setLunchDuration] = useState(30);
+  const [snackDuration, setSnackDuration] = useState(15);
 
   const openTasks = tasks.filter(t => t.status === 'open');
-  const todaySessions = sessions.filter(s => isToday(s.startAt));
 
   const handleAddTask = (taskData: Omit<Task, 'id'>) => {
     const newTask: Task = {
@@ -70,7 +82,22 @@ export default function Dashboard() {
   };
 
   const generatePlan = () => {
-    const result = generateIntelligentSchedule(tasks, userPreferences, 7);
+    // Update preferences with current availability blocks
+    const updatedPreferences = {
+      ...userPreferences,
+      weeklySchedule: {
+        monday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+        tuesday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+        wednesday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+        thursday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+        friday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+        saturday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+        sunday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] }
+      },
+      breakLengthMinutes: snackDuration
+    };
+
+    const result = generateIntelligentSchedule(tasks, updatedPreferences, 7);
     setSessions(result.sessions);
     setHasGeneratedPlan(true);
     setPlanNeedsUpdate(false);
@@ -89,13 +116,18 @@ export default function Dashboard() {
     generatePlan();
   };
 
-  const handleSaveSettings = (newPreferences: EnhancedUserPreferences) => {
-    setUserPreferences(newPreferences);
-    // Automatically regenerate plan if it exists
+  const handleUpdateAvailability = (blocks: TimeBlock[]) => {
+    setAvailableBlocks(blocks);
     if (hasGeneratedPlan) {
-      const result = generateIntelligentSchedule(tasks, newPreferences, 7);
-      setSessions(result.sessions);
-      setPlanNeedsUpdate(false);
+      setPlanNeedsUpdate(true);
+    }
+  };
+
+  const handleUpdateBreaks = (lunch: number, snack: number) => {
+    setLunchDuration(lunch);
+    setSnackDuration(snack);
+    if (hasGeneratedPlan) {
+      setPlanNeedsUpdate(true);
     }
   };
 
@@ -178,48 +210,23 @@ export default function Dashboard() {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => setShowSettings(true)}
+                  onClick={() => setShowAvailability(true)}
                   className="gap-2"
                 >
-                  <Settings className="w-4 h-4" />
-                  Settings
+                  <Clock className="w-4 h-4" />
+                  Availability
                 </Button>
               </div>
             </div>
 
             <div className="space-y-4">
-              {todaySessions.length > 0 ? (
-                todaySessions.map(session => {
-                  if (session.type === 'break' || session.type === 'meal') {
-                    return (
-                      <SessionBlock
-                        key={session.id}
-                        session={session}
-                        task={{} as Task}
-                        course={{} as Course}
-                      />
-                    );
-                  }
-                  
-                  const task = tasks.find(t => t.id === session.taskId);
-                  const course = courses.find(c => c.id === task?.courseId) || {
-                    id: task?.courseId || '',
-                    name: 'Unknown Course',
-                    color: '#3b82f6'
-                  };
-                  
-                  if (!task) return null;
-                  
-                  return (
-                    <SessionBlock
-                      key={session.id}
-                      session={session}
-                      task={task}
-                      course={course}
-                      onComplete={handleCompleteSession}
-                    />
-                  );
-                })
+              {hasGeneratedPlan && sessions.length > 0 ? (
+                <CalendarView
+                  sessions={sessions}
+                  tasks={tasks}
+                  courses={courses}
+                  onCompleteSession={handleCompleteSession}
+                />
               ) : openTasks.length > 0 ? (
                 <Card className="p-8 text-center bg-background/60 backdrop-blur-sm border-0">
                   <Calendar className="w-16 h-16 mx-auto mb-4 text-accent" />
@@ -259,12 +266,24 @@ export default function Dashboard() {
           />
         )}
 
-        {showSettings && (
-          <ScheduleSettings
-            preferences={userPreferences}
-            onSave={handleSaveSettings}
-            onClose={() => setShowSettings(false)}
-          />
+        {showAvailability && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-background p-6 rounded-lg max-w-md w-full mx-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Study Availability</h3>
+                <Button variant="ghost" size="sm" onClick={() => setShowAvailability(false)}>
+                  ×
+                </Button>
+              </div>
+              <AvailabilitySettings
+                availableBlocks={availableBlocks}
+                lunchDuration={lunchDuration}
+                snackDuration={snackDuration}
+                onUpdateAvailability={handleUpdateAvailability}
+                onUpdateBreaks={handleUpdateBreaks}
+              />
+            </div>
+          </div>
         )}
       </div>
     </div>
