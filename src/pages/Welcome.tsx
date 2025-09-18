@@ -8,7 +8,7 @@ export default function Welcome() {
     <div className="min-h-screen bg-gradient-calm flex items-center justify-center">
       <div className="max-w-2xl mx-auto px-6 text-center">
         <div className="mb-12">
-          <h1 className="text-6xl font-bold text-foreground mb-12">
+          <h1 className="text-6xl font-bold text-foreground mb-12 font-dm-serif">
             Clarity
           </h1>
         </div>

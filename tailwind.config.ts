@@ -60,6 +60,9 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
+      fontFamily: {
+        'dm-serif': ['DM Serif Display', 'serif'],
+      },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',
         'gradient-calm': 'var(--gradient-calm)',

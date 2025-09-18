@@ -173,7 +173,7 @@ export default function Dashboard() {
         {/* Google Calendar style header */}
         <div className="border-b border-border px-6 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-normal text-foreground">
+            <h1 className="text-2xl font-normal text-foreground font-dm-serif">
               Clarity
             </h1>
             <Button 
