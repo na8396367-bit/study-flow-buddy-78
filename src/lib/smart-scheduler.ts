@@ -402,6 +402,11 @@ function addOptimalBreaks(sessions: PlanSession[], preferences: EnhancedUserPref
   const allBlocks: PlanSession[] = [];
   const sortedSessions = [...sessions].sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
   
+  // Don't add breaks if Pomodoro is disabled (breakLengthMinutes = 0)
+  if (preferences.breakLengthMinutes === 0) {
+    return sortedSessions;
+  }
+  
   for (let i = 0; i < sortedSessions.length; i++) {
     allBlocks.push(sortedSessions[i]);
     
