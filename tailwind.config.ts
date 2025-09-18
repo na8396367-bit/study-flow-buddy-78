@@ -61,7 +61,7 @@ export default {
         },
       },
       fontFamily: {
-        'dm-serif': ['Freckle Face', 'serif'],
+        'dm-serif': ['Crimson Text', 'serif'],
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',
