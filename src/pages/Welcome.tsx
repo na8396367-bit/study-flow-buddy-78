@@ -6,6 +6,12 @@ export default function Welcome() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-primary/5 flex items-center justify-center relative overflow-hidden">
+      {/* Corner design elements */}
+      <div className="absolute top-0 left-0 w-32 h-32 border-l-2 border-t-2 border-primary/10"></div>
+      <div className="absolute top-0 right-0 w-32 h-32 border-r-2 border-t-2 border-primary/10"></div>
+      <div className="absolute bottom-0 left-0 w-32 h-32 border-l-2 border-b-2 border-primary/10"></div>
+      <div className="absolute bottom-0 right-0 w-32 h-32 border-r-2 border-b-2 border-primary/10"></div>
+      
       {/* Subtle geometric background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float"></div>
@@ -17,10 +23,7 @@ export default function Welcome() {
           <h1 className="text-8xl font-dm-serif text-primary tracking-tight mb-6 animate-float">
             Clarity
           </h1>
-          <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-4"></div>
-          <p className="text-muted-foreground text-lg font-light tracking-wide opacity-70">
-            Focus. Study. Achieve.
-          </p>
+          <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto"></div>
         </div>
 
         <Button 
