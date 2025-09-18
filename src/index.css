@@ -8,41 +8,41 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Google Calendar inspired clean design */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 20%;
+    /* Blue and teal inspired design system */
+    --background: 200 20% 98%;
+    --foreground: 200 15% 25%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 20%;
+    --card: 200 20% 100%;
+    --card-foreground: 200 15% 25%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 20%;
+    --popover: 200 20% 100%;
+    --popover-foreground: 200 15% 25%;
 
-    /* Google Calendar blue */
-    --primary: 210 100% 56%;
+    /* Primary blue-teal gradient */
+    --primary: 195 100% 45%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 210 100% 50%;
+    --primary-hover: 200 100% 40%;
 
-    /* Clean secondary */
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 40%;
+    /* Teal secondary */
+    --secondary: 185 25% 90%;
+    --secondary-foreground: 200 15% 40%;
 
-    /* Minimal muted backgrounds */
-    --muted: 0 0% 97%;
-    --muted-foreground: 0 0% 50%;
+    /* Cool muted backgrounds */
+    --muted: 200 20% 96%;
+    --muted-foreground: 200 15% 50%;
 
-    /* Subtle accent */
-    --accent: 210 100% 56%;
+    /* Accent teal */
+    --accent: 175 70% 41%;
     --accent-foreground: 0 0% 100%;
 
     /* Clean destructive */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Google Calendar borders */
-    --border: 0 0% 90%;
-    --input: 0 0% 97%;
-    --ring: 210 100% 56%;
+    /* Blue-teal borders */
+    --border: 200 20% 88%;
+    --input: 200 20% 96%;
+    --ring: 195 100% 45%;
 
     --radius: 0.5rem;
 
