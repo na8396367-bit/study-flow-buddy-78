@@ -17,7 +17,8 @@ export function SequentialTaskForm({ courses, onAddTask, onAddCourse, onClose }:
   const [formData, setFormData] = useState({
     title: '',
     courseId: '',
-    estHours: '',
+    estHours: 0,
+    estMinutes: 0,
     dueDate: '',
     priority: 'medium' as Task['priority'],
     difficulty: '3' as string,
@@ -56,18 +57,21 @@ export function SequentialTaskForm({ courses, onAddTask, onAddCourse, onClose }:
   };
 
   const handleSubmit = () => {
-    if (!formData.title || !formData.courseId || !formData.dueDate || !formData.estHours) {
+    if (!formData.title || !formData.courseId || !formData.dueDate || (formData.estHours === 0 && formData.estMinutes === 0)) {
       return;
     }
 
     const dueAt = new Date(`${formData.dueDate}T23:59`);
+    
+    // Convert hours and minutes to total hours
+    const totalHours = formData.estHours + (formData.estMinutes / 60);
     
     onAddTask({
       title: formData.title,
       courseId: formData.courseId,
       type: 'reading',
       dueAt,
-      estHours: parseFloat(formData.estHours),
+      estHours: totalHours,
       difficulty: parseInt(formData.difficulty) as Task['difficulty'],
       priority: formData.priority,
       notes: '',
@@ -79,7 +83,7 @@ export function SequentialTaskForm({ courses, onAddTask, onAddCourse, onClose }:
 
   const steps = [
     {
-      question: "What needs to be done?",
+      question: "Enter your task name",
       placeholder: "Enter your task...",
       component: (
         <Input
@@ -142,21 +146,43 @@ export function SequentialTaskForm({ courses, onAddTask, onAddCourse, onClose }:
       isValid: () => formData.courseId !== '' || showAddCourse
     },
     {
-      question: "How many hours will this take?",
+      question: "How long will this take?",
       component: (
-        <Input
-          type="number"
-          step="0.5"
-          min="0.5"
-          value={formData.estHours}
-          onChange={(e) => setFormData({ ...formData, estHours: e.target.value })}
-          placeholder="2.5"
-          className="text-center text-xl font-light border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-muted-foreground/30 w-32 mx-auto"
-          autoFocus
-          onKeyDown={(e) => e.key === 'Enter' && formData.estHours && handleNext()}
-        />
+        <div className="flex items-center justify-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <Input
+              type="number"
+              min="0"
+              max="23"
+              value={formData.estHours || ''}
+              onChange={(e) => setFormData({ ...formData, estHours: parseInt(e.target.value) || 0 })}
+              placeholder="0"
+              className="text-center text-xl font-light border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-muted-foreground/30 w-16"
+              autoFocus
+            />
+            <span className="text-muted-foreground font-light">hours</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Select 
+              value={formData.estMinutes.toString()} 
+              onValueChange={(value) => setFormData({ ...formData, estMinutes: parseInt(value) })}
+            >
+              <SelectTrigger className="text-center text-xl font-light border-0 bg-transparent focus:ring-0 focus:outline-none w-16">
+                <SelectValue placeholder="0" />
+              </SelectTrigger>
+              <SelectContent>
+                {[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map((minutes) => (
+                  <SelectItem key={minutes} value={minutes.toString()}>
+                    {minutes}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className="text-muted-foreground font-light">minutes</span>
+          </div>
+        </div>
       ),
-      isValid: () => formData.estHours !== '' && parseFloat(formData.estHours) > 0
+      isValid: () => formData.estHours > 0 || formData.estMinutes > 0
     },
     {
       question: "When is this due?",
