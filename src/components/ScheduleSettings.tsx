@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EnhancedUserPreferences } from "@/lib/timezone-scheduler";
 import { ConstraintsManager } from "./ConstraintsManager";
 import { TimeConstraint } from "@/types";
+import { TimeInput } from "@/components/ui/time-input";
 import { useState } from "react";
 import { X, Clock, Calendar, Settings2 } from "lucide-react";
 
@@ -188,35 +189,32 @@ export function ScheduleSettings({ preferences, onSave, onClose }: ScheduleSetti
                           <>
                             <div className="space-y-1">
                               <Label className="text-xs">Start Time</Label>
-                              <Input
-                                type="time"
+                              <TimeInput
                                 value={daySchedule.startTime}
-                                onChange={(e) => updateWeeklySchedule(day, 'startTime', e.target.value)}
+                                onChange={(value) => updateWeeklySchedule(day, 'startTime', value)}
                                 className="text-xs"
                               />
                             </div>
                             
                             <div className="space-y-1">
                               <Label className="text-xs">End Time</Label>
-                              <Input
-                                type="time"
+                              <TimeInput
                                 value={daySchedule.endTime}
-                                onChange={(e) => updateWeeklySchedule(day, 'endTime', e.target.value)}
+                                onChange={(value) => updateWeeklySchedule(day, 'endTime', value)}
                                 className="text-xs"
                               />
                             </div>
                             
                             <div className="space-y-1">
                               <Label className="text-xs">Lunch Start</Label>
-                              <Input
-                                type="time"
+                              <TimeInput
                                 value={daySchedule.mealBreaks[0]?.start || "12:00"}
-                                onChange={(e) => {
+                                onChange={(value) => {
                                   const newMealBreaks = [...daySchedule.mealBreaks];
                                   if (newMealBreaks[0]) {
-                                    newMealBreaks[0].start = e.target.value;
+                                    newMealBreaks[0].start = value;
                                   } else {
-                                    newMealBreaks[0] = { start: e.target.value, end: "13:00", label: "Lunch" };
+                                    newMealBreaks[0] = { start: value, end: "13:00", label: "Lunch" };
                                   }
                                   updateWeeklySchedule(day, 'mealBreaks', newMealBreaks);
                                 }}
@@ -226,15 +224,14 @@ export function ScheduleSettings({ preferences, onSave, onClose }: ScheduleSetti
                             
                             <div className="space-y-1">
                               <Label className="text-xs">Lunch End</Label>
-                              <Input
-                                type="time"
+                              <TimeInput
                                 value={daySchedule.mealBreaks[0]?.end || "13:00"}
-                                onChange={(e) => {
+                                onChange={(value) => {
                                   const newMealBreaks = [...daySchedule.mealBreaks];
                                   if (newMealBreaks[0]) {
-                                    newMealBreaks[0].end = e.target.value;
+                                    newMealBreaks[0].end = value;
                                   } else {
-                                    newMealBreaks[0] = { start: "12:00", end: e.target.value, label: "Lunch" };
+                                    newMealBreaks[0] = { start: "12:00", end: value, label: "Lunch" };
                                   }
                                   updateWeeklySchedule(day, 'mealBreaks', newMealBreaks);
                                 }}

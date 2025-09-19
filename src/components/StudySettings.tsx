@@ -5,7 +5,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { TimeInput } from "@/components/ui/time-input";
 import { X, Plus, Clock, Target } from "lucide-react";
+
+// Helper function to format 24-hour time to 12-hour AM/PM format
+const formatTimeToAmPm = (time24: string): string => {
+  const [hours, minutes] = time24.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+  return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+};
 
 interface TimeBlock {
   id: string;
@@ -160,7 +169,7 @@ export function StudySettings({
                     variant="secondary" 
                     className="flex items-center gap-2 px-3 py-1.5 text-sm"
                   >
-                    {block.startTime} - {block.endTime}
+                    {formatTimeToAmPm(block.startTime)} - {formatTimeToAmPm(block.endTime)}
                     <button
                       onClick={() => removeTimeBlock(block.id)}
                       className="hover:bg-destructive/20 rounded-full p-0.5 ml-1"
@@ -174,28 +183,16 @@ export function StudySettings({
 
             {/* Add new block */}
             <div className="flex gap-2">
-              <Input
-                type="text"
+              <TimeInput
                 value={newBlock.startTime}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/[^\d:]/g, '');
-                  if (value.length <= 5) {
-                    setNewBlock({ ...newBlock, startTime: value });
-                  }
-                }}
-                placeholder="Start (e.g. 9:00)"
+                onChange={(value) => setNewBlock({ ...newBlock, startTime: value })}
+                placeholder="Start time"
                 className="h-9"
               />
-              <Input
-                type="text"
+              <TimeInput
                 value={newBlock.endTime}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/[^\d:]/g, '');
-                  if (value.length <= 5) {
-                    setNewBlock({ ...newBlock, endTime: value });
-                  }
-                }}
-                placeholder="End (e.g. 17:00)"
+                onChange={(value) => setNewBlock({ ...newBlock, endTime: value })}
+                placeholder="End time"
                 className="h-9"
               />
               <Button 

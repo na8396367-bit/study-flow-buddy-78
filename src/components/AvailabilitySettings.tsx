@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { TimeInput } from "@/components/ui/time-input";
 import { X, Plus, Coffee, UtensilsCrossed } from "lucide-react";
 
 // Helper function to format 24-hour time to 12-hour AM/PM format
@@ -115,16 +116,14 @@ export function AvailabilitySettings({
 
           {/* Add New Time Block */}
           <div className="grid grid-cols-3 gap-2">
-            <Input
-              type="time"
+            <TimeInput
               value={newBlock.startTime}
-              onChange={(e) => setNewBlock({ ...newBlock, startTime: e.target.value })}
+              onChange={(value) => setNewBlock({ ...newBlock, startTime: value })}
               placeholder="Start time"
             />
-            <Input
-              type="time"
+            <TimeInput
               value={newBlock.endTime}
-              onChange={(e) => setNewBlock({ ...newBlock, endTime: e.target.value })}
+              onChange={(value) => setNewBlock({ ...newBlock, endTime: value })}
               placeholder="End time"
             />
             <Button onClick={addTimeBlock} size="sm" className="w-full">
