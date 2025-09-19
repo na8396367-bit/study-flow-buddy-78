@@ -83,7 +83,7 @@ export default function Dashboard() {
     ));
   };
 
-  const generateScheduleWithTasks = (tasksToSchedule: Task[]) => {
+  const generateScheduleWithTasks = (tasksToSchedule: Task[], pomodoroOverride?: boolean) => {
     // Convert available blocks to weekly schedule
     const baseSchedule = {
       monday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
@@ -114,11 +114,13 @@ export default function Dashboard() {
       });
     }
 
+    const currentPomodoroState = pomodoroOverride !== undefined ? pomodoroOverride : pomodoroEnabled;
+    
     const updatedPreferences = {
       ...userPreferences,
       weeklySchedule: baseSchedule,
       blockLengthMinutes: sessionLength,
-      breakLengthMinutes: pomodoroEnabled ? breakLength : 0
+      breakLengthMinutes: currentPomodoroState ? breakLength : 0
     };
 
     const result = generateIntelligentSchedule(tasksToSchedule, updatedPreferences, 7);
@@ -149,7 +151,8 @@ export default function Dashboard() {
   const handleUpdatePomodoro = (enabled: boolean) => {
     setPomodoroEnabled(enabled);
     if (hasGeneratedPlan && tasks.length > 0) {
-      setTimeout(() => generateScheduleWithTasks(tasks), 100);
+      // Pass the new enabled value directly to avoid stale state
+      setTimeout(() => generateScheduleWithTasks(tasks, enabled), 100);
     }
   };
 
