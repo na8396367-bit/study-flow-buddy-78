@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { TimeInput } from "@/components/ui/time-input";
+import { TimeRangeInput } from "@/components/ui/time-range-input";
 import { X, Plus, Clock, Target } from "lucide-react";
 
 // Helper function to format 24-hour time to 12-hour AM/PM format
@@ -50,30 +50,19 @@ export function StudySettings({
 
   const addTimeBlock = () => {
     if (newBlock.startTime && newBlock.endTime) {
-      // Validate time format and round to nearest 5 minutes
-      const validateAndRoundTime = (time: string) => {
-        const [hours, minutes] = time.split(':').map(Number);
-        if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-          return null;
-        }
-        const roundedMinutes = Math.round(minutes / 5) * 5;
-        return `${hours.toString().padStart(2, '0')}:${(roundedMinutes % 60).toString().padStart(2, '0')}`;
+      const block: TimeBlock = {
+        id: Date.now().toString(),
+        startTime: newBlock.startTime,
+        endTime: newBlock.endTime,
+        label: formatTimeToAmPm(newBlock.startTime) + " - " + formatTimeToAmPm(newBlock.endTime)
       };
-
-      const validStartTime = validateAndRoundTime(newBlock.startTime);
-      const validEndTime = validateAndRoundTime(newBlock.endTime);
-
-      if (validStartTime && validEndTime) {
-        const block: TimeBlock = {
-          id: Date.now().toString(),
-          startTime: validStartTime,
-          endTime: validEndTime,
-          label: `${validStartTime} - ${validEndTime}`
-        };
-        onUpdateBlocks([...availableBlocks, block]);
-        setNewBlock({ startTime: "", endTime: "" });
-      }
+      onUpdateBlocks([...availableBlocks, block]);
+      setNewBlock({ startTime: "", endTime: "" });
     }
+  };
+
+  const handleTimeRangeChange = (startTime: string, endTime: string) => {
+    setNewBlock({ startTime, endTime });
   };
 
   const removeTimeBlock = (id: string) => {
@@ -183,16 +172,11 @@ export function StudySettings({
 
             {/* Add new block */}
             <div className="flex gap-2">
-              <TimeInput
-                value={newBlock.startTime}
-                onChange={(value) => setNewBlock({ ...newBlock, startTime: value })}
-                placeholder="Start time"
-                className="h-9"
-              />
-              <TimeInput
-                value={newBlock.endTime}
-                onChange={(value) => setNewBlock({ ...newBlock, endTime: value })}
-                placeholder="End time"
+              <TimeRangeInput
+                startTime={newBlock.startTime}
+                endTime={newBlock.endTime}
+                onChange={handleTimeRangeChange}
+                placeholder="e.g., 9 to 5, study 2-4pm"
                 className="h-9"
               />
               <Button 

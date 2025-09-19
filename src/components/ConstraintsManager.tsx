@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { TimeInput } from "@/components/ui/time-input";
+import { TimeRangeInput } from "@/components/ui/time-range-input";
 import { Plus, Trash2, Calendar } from "lucide-react";
 
 // Helper function to format 24-hour time to 12-hour AM/PM format
@@ -177,22 +177,18 @@ export function ConstraintsManager({ constraints, onUpdate }: ConstraintsManager
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Start Time</Label>
-                <TimeInput
-                  value={newConstraint.startTime}
-                  onChange={(value) => setNewConstraint(prev => ({ ...prev, startTime: value }))}
-                />
-              </div>
-              
-              <div>
-                <Label>End Time</Label>
-                <TimeInput
-                  value={newConstraint.endTime}
-                  onChange={(value) => setNewConstraint(prev => ({ ...prev, endTime: value }))}
-                />
-              </div>
+            <div>
+              <Label>Time Range</Label>
+              <TimeRangeInput
+                startTime={newConstraint.startTime || "09:00"}
+                endTime={newConstraint.endTime || "10:00"}
+                onChange={(startTime, endTime) => setNewConstraint(prev => ({ 
+                  ...prev, 
+                  startTime, 
+                  endTime 
+                }))}
+                placeholder="e.g., 9 to 5, lunch 12-1pm"
+              />
             </div>
 
             <div>

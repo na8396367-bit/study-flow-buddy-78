@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { TimeInput } from "@/components/ui/time-input";
+import { TimeRangeInput } from "@/components/ui/time-range-input";
 import { X, Plus, Coffee, UtensilsCrossed } from "lucide-react";
 
 // Helper function to format 24-hour time to 12-hour AM/PM format
@@ -46,11 +46,15 @@ export function AvailabilitySettings({
       const block: TimeBlock = {
         id: Date.now().toString(),
         ...newBlock,
-        label: newBlock.label || `${newBlock.startTime} - ${newBlock.endTime}`
+        label: newBlock.label || formatTimeToAmPm(newBlock.startTime) + " - " + formatTimeToAmPm(newBlock.endTime)
       };
       onUpdateAvailability([...availableBlocks, block]);
       setNewBlock({ startTime: "", endTime: "", label: "" });
     }
+  };
+
+  const handleTimeRangeChange = (startTime: string, endTime: string) => {
+    setNewBlock(prev => ({ ...prev, startTime, endTime }));
   };
 
   const removeTimeBlock = (id: string) => {
@@ -115,18 +119,19 @@ export function AvailabilitySettings({
           </div>
 
           {/* Add New Time Block */}
-          <div className="grid grid-cols-3 gap-2">
-            <TimeInput
-              value={newBlock.startTime}
-              onChange={(value) => setNewBlock({ ...newBlock, startTime: value })}
-              placeholder="Start time"
+          <div className="grid grid-cols-2 gap-2">
+            <TimeRangeInput
+              startTime={newBlock.startTime}
+              endTime={newBlock.endTime}
+              onChange={handleTimeRangeChange}
+              placeholder="e.g., 9 to 5, 9:30am-2pm"
             />
-            <TimeInput
-              value={newBlock.endTime}
-              onChange={(value) => setNewBlock({ ...newBlock, endTime: value })}
-              placeholder="End time"
-            />
-            <Button onClick={addTimeBlock} size="sm" className="w-full">
+            <Button 
+              onClick={addTimeBlock} 
+              size="sm" 
+              className="w-full"
+              disabled={!newBlock.startTime || !newBlock.endTime}
+            >
               <Plus className="w-4 h-4 mr-1" />
               Add
             </Button>
