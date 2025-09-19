@@ -61,7 +61,7 @@ export default {
         },
       },
       fontFamily: {
-        'dm-serif': ['Crimson Text', 'serif'],
+        'dm-serif': ['Poppins', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',

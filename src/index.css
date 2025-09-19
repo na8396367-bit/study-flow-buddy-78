@@ -8,41 +8,41 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Blue and teal inspired design system */
-    --background: 200 20% 98%;
-    --foreground: 200 15% 25%;
+    /* Light blue and aqua inspired design system */
+    --background: 210 30% 98%;
+    --foreground: 210 20% 30%;
 
-    --card: 200 20% 100%;
-    --card-foreground: 200 15% 25%;
+    --card: 210 30% 100%;
+    --card-foreground: 210 20% 30%;
 
-    --popover: 200 20% 100%;
-    --popover-foreground: 200 15% 25%;
+    --popover: 210 30% 100%;
+    --popover-foreground: 210 20% 30%;
 
-    /* Primary blue-teal gradient */
-    --primary: 195 100% 45%;
+    /* Primary light blue */
+    --primary: 200 85% 65%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 200 100% 40%;
+    --primary-hover: 200 85% 55%;
 
-    /* Teal secondary */
-    --secondary: 185 25% 90%;
-    --secondary-foreground: 200 15% 40%;
+    /* Light aqua secondary */
+    --secondary: 180 40% 88%;
+    --secondary-foreground: 210 20% 40%;
 
-    /* Cool muted backgrounds */
-    --muted: 200 20% 96%;
-    --muted-foreground: 200 15% 50%;
+    /* Soft muted backgrounds */
+    --muted: 210 30% 95%;
+    --muted-foreground: 210 20% 50%;
 
-    /* Accent teal */
-    --accent: 175 70% 41%;
+    /* Light aqua accent */
+    --accent: 175 55% 65%;
     --accent-foreground: 0 0% 100%;
 
     /* Clean destructive */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Blue-teal borders */
-    --border: 200 20% 88%;
-    --input: 200 20% 96%;
-    --ring: 195 100% 45%;
+    /* Light blue borders */
+    --border: 210 30% 90%;
+    --input: 210 30% 95%;
+    --ring: 200 85% 65%;
 
     --radius: 0.5rem;
 
