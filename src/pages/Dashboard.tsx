@@ -116,6 +116,12 @@ export default function Dashboard() {
     
     const currentBlocks = blocksOverride || availableBlocks;
     
+    console.log('generateScheduleWithTasks called with:');
+    console.log('- Tasks:', tasksToSchedule.length);
+    console.log('- Current blocks:', currentBlocks);
+    console.log('- Session length:', sessionLength);
+    console.log('- Break length:', breakLength);
+    
     const updatedPreferences = {
       ...userPreferences,
       weeklySchedule: baseSchedule,
@@ -143,12 +149,15 @@ export default function Dashboard() {
   };
 
   const handleUpdateBlocks = (blocks: TimeBlock[]) => {
+    console.log('handleUpdateBlocks called with:', blocks);
     setAvailableBlocks(blocks);
     // Always regenerate schedule when time blocks change, if there are tasks
     if (tasks.length > 0) {
+      console.log('Regenerating schedule with new blocks...');
       // Pass the new blocks directly to avoid race condition
       generateScheduleWithTasks(tasks, undefined, blocks);
       setHasGeneratedPlan(true);
+      console.log('Schedule regeneration completed');
     }
   };
 
