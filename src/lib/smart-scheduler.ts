@@ -98,9 +98,6 @@ function generateAvailableTimeSlots(
   // Use specific time blocks if available
   const availableBlocks = (preferences as any).availableTimeBlocks || [];
   
-  console.log('Scheduler: availableBlocks received:', availableBlocks);
-  console.log('Scheduler: blockLengthMinutes:', preferences.blockLengthMinutes);
-  
   for (let i = 0; i < daysAhead; i++) {
     const currentDate = addDays(startDate, i);
     
@@ -118,13 +115,8 @@ function generateAvailableTimeSlots(
         // Create slots within this time block
         let currentSlotStart = new Date(blockStart);
         
-        console.log('Creating slots for block:', block, 'on date:', format(currentDate, 'yyyy-MM-dd'));
-        console.log('Block start:', blockStart, 'Block end:', blockEnd);
-        
         while (currentSlotStart < blockEnd) {
           const slotEnd = addMinutes(currentSlotStart, preferences.blockLengthMinutes);
-          
-          console.log('Trying slot:', currentSlotStart, 'to', slotEnd);
           
           if (slotEnd <= blockEnd) {
             // Check if this slot conflicts with constraints
@@ -135,12 +127,7 @@ function generateAvailableTimeSlots(
                 endAt: fromZonedTime(new Date(slotEnd), timezone),
                 priority
               });
-              console.log('Added slot:', currentSlotStart, 'to', slotEnd);
-            } else {
-              console.log('Slot conflicts with constraints');
             }
-          } else {
-            console.log('Slot would exceed block end time');
           }
           
           currentSlotStart = addMinutes(currentSlotStart, preferences.blockLengthMinutes + preferences.breakLengthMinutes);
