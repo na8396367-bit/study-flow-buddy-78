@@ -33,7 +33,7 @@ export function CalendarView({ sessions, tasks, courses, onCompleteSession }: Ca
   };
 
   const formatTime = (date: Date) => {
-    return format(date, "HH:mm");
+    return format(date, "h:mm a");
   };
 
   const formatDuration = (start: Date, end: Date) => {
