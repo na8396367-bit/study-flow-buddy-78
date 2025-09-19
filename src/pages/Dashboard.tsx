@@ -140,8 +140,12 @@ export default function Dashboard() {
 
   const handleUpdateBlocks = (blocks: TimeBlock[]) => {
     setAvailableBlocks(blocks);
-    if (hasGeneratedPlan && tasks.length > 0) {
-      setTimeout(() => generateScheduleWithTasks(tasks), 100);
+    // Always regenerate schedule when time blocks change, if there are tasks
+    if (tasks.length > 0) {
+      setTimeout(() => {
+        generateScheduleWithTasks(tasks);
+        setHasGeneratedPlan(true);
+      }, 100);
     }
   };
 
