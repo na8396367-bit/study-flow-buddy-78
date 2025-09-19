@@ -270,14 +270,14 @@ function prioritizeTasks(tasks: Task[], timezone: string): Task[] {
   const now = toZonedTime(new Date(), timezone);
   
   return tasks.sort((a, b) => {
-    // Calculate urgency
+    // Priority is the most important factor - use much higher weights
+    const priorityWeight = { low: 1, medium: 5, high: 15 };
+    
+    // Calculate urgency (days until due)
     const urgencyA = Math.max(0.1, (a.dueAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     const urgencyB = Math.max(0.1, (b.dueAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     
-    // Priority weights
-    const priorityWeight = { low: 1, medium: 2, high: 3 };
-    
-    // Task type complexity
+    // Task type complexity (secondary factor)
     const complexityWeight = {
       'reading': 1.0,
       'memorization': 1.1,
@@ -286,9 +286,21 @@ function prioritizeTasks(tasks: Task[], timezone: string): Task[] {
       'exam-prep': 1.6
     };
     
-    // Calculate comprehensive scores
-    const scoreA = (1 / urgencyA) * priorityWeight[a.priority] * complexityWeight[a.type] * (1 + (a.difficulty - 3) * 0.2);
-    const scoreB = (1 / urgencyB) * priorityWeight[b.priority] * complexityWeight[b.type] * (1 + (b.difficulty - 3) * 0.2);
+    // Primary sort: Priority (highest weight)
+    const priorityDiff = priorityWeight[b.priority] - priorityWeight[a.priority];
+    if (priorityDiff !== 0) {
+      return priorityDiff;
+    }
+    
+    // Secondary sort: Urgency (if same priority)
+    const urgencyScore = (1 / urgencyA) - (1 / urgencyB);
+    if (Math.abs(urgencyScore) > 0.1) {
+      return urgencyScore;
+    }
+    
+    // Tertiary sort: Complexity and difficulty (if same priority and similar urgency)
+    const scoreA = complexityWeight[a.type] * (1 + (a.difficulty - 3) * 0.2);
+    const scoreB = complexityWeight[b.type] * (1 + (b.difficulty - 3) * 0.2);
     
     return scoreB - scoreA;
   });
