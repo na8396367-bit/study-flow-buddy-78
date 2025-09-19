@@ -7,6 +7,7 @@ interface TimeRangeInputProps {
   startTime: string; // 24-hour format like "14:30"
   endTime: string; // 24-hour format like "16:00"
   onChange: (startTime: string, endTime: string) => void;
+  onEnter?: () => void; // Called when Enter is pressed
   className?: string;
   placeholder?: string;
 }
@@ -32,6 +33,7 @@ export function TimeRangeInput({
   startTime, 
   endTime, 
   onChange, 
+  onEnter,
   className, 
   placeholder 
 }: TimeRangeInputProps) {
@@ -57,12 +59,20 @@ export function TimeRangeInput({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && onEnter) {
+      e.preventDefault();
+      onEnter();
+    }
+  };
+
   return (
     <Input
       type="text"
       value={inputValue}
       onChange={(e) => handleInputChange(e.target.value)}
       onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
       placeholder={placeholder || "e.g., 9 to 5, 9:30am-2pm, nine to three"}
       className={cn("text-center", className)}
     />

@@ -124,7 +124,8 @@ export function AvailabilitySettings({
               startTime={newBlock.startTime}
               endTime={newBlock.endTime}
               onChange={handleTimeRangeChange}
-              placeholder="e.g., 9 to 5, 9:30am-2pm"
+              onEnter={addTimeBlock}
+              placeholder="e.g., 9 to 5, 9:30am-2pm (press Enter)"
             />
             <Button 
               onClick={addTimeBlock} 

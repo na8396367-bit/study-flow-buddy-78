@@ -176,7 +176,8 @@ export function StudySettings({
                 startTime={newBlock.startTime}
                 endTime={newBlock.endTime}
                 onChange={handleTimeRangeChange}
-                placeholder="e.g., 9 to 5, study 2-4pm"
+                onEnter={addTimeBlock}
+                placeholder="e.g., 9 to 5, study 2-4pm (press Enter)"
                 className="h-9"
               />
               <Button 
