@@ -36,7 +36,7 @@ export function TaskCard({ task, course, onComplete }: TaskCardProps) {
           <div className="flex items-center gap-2 mt-1">
             <span className="text-xs text-muted-foreground">{course.name}</span>
             <span className="text-xs text-muted-foreground">•</span>
-            <span className="text-xs text-muted-foreground">{task.estHours}h</span>
+            <span className="text-xs text-muted-foreground">{Math.floor(task.estHours)}h {Math.round((task.estHours % 1) * 60)}m</span>
             {task.dueAt && (
               <>
                 <span className="text-xs text-muted-foreground">•</span>

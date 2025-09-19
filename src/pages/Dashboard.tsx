@@ -79,7 +79,10 @@ export default function Dashboard() {
 
   const handleCompleteSession = (sessionId: string) => {
     setSessions(sessions.map(s =>
-      s.id === sessionId ? { ...s, status: 'done' as const } : s
+      s.id === sessionId ? { 
+        ...s, 
+        status: s.status === 'done' ? 'planned' as const : 'done' as const 
+      } : s
     ));
   };
 

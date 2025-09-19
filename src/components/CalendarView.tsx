@@ -119,9 +119,6 @@ export function CalendarView({ sessions, tasks, courses, onCompleteSession }: Ca
           <h2 className="text-2xl font-normal text-foreground">
             {format(currentDate, "EEEE, MMMM d")}
           </h2>
-          {isToday(currentDate) && (
-            <div className="w-2 h-2 bg-primary rounded-full"></div>
-          )}
         </div>
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="sm" onClick={() => navigateDay("prev")} className="h-8 w-8 p-0">
