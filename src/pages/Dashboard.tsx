@@ -120,6 +120,8 @@ export default function Dashboard() {
       blockLengthMinutes: sessionLength,
       breakLengthMinutes: pomodoroEnabled ? breakLength : 0
     };
+    
+    console.log('Pomodoro Debug:', { pomodoroEnabled, breakLength, breakLengthMinutes: updatedPreferences.breakLengthMinutes });
 
     const result = generateIntelligentSchedule(tasksToSchedule, updatedPreferences, 7);
     setSessions(result.sessions);
