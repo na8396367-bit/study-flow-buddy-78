@@ -252,23 +252,6 @@ export default function Dashboard() {
                 courses={courses}
                 onCompleteSession={handleCompleteSession}
               />
-            ) : openTasks.length > 0 ? (
-              <div className="flex items-center justify-center h-96">
-                <div className="text-center">
-                  <Calendar className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-xl font-medium mb-2">Ready to schedule?</h3>
-                  <p className="text-muted-foreground mb-6 max-w-md">
-                    Your tasks will be automatically scheduled when you add them.
-                  </p>
-                  <Button 
-                    onClick={generatePlan} 
-                    className="bg-primary hover:bg-primary-hover text-primary-foreground font-medium rounded-full px-6"
-                  >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Generate Schedule Now
-                  </Button>
-                </div>
-              </div>
             ) : (
               <div className="flex items-center justify-center h-96">
                 <div className="text-center">
