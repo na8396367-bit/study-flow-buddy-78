@@ -94,43 +94,82 @@ function generateAvailableTimeSlots(
   timezone: string
 ): Array<{ startAt: Date; endAt: Date; priority: number }> {
   const slots: Array<{ startAt: Date; endAt: Date; priority: number }> = [];
-  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-
+  
+  // Use specific time blocks if available
+  const availableBlocks = (preferences as any).availableTimeBlocks || [];
+  
   for (let i = 0; i < daysAhead; i++) {
     const currentDate = addDays(startDate, i);
-    const dayName = dayNames[currentDate.getDay()];
-    const daySchedule = preferences.weeklySchedule[dayName];
-
-    if (!daySchedule || !daySchedule.isAvailable) continue;
-
-    // Create time slots for this day
-    const dayStart = new Date(currentDate);
-    const [startHour, startMinute] = daySchedule.startTime.split(':').map(Number);
-    dayStart.setHours(startHour, startMinute, 0, 0);
-
-    const dayEnd = new Date(currentDate);
-    const [endHour, endMinute] = daySchedule.endTime.split(':').map(Number);
-    dayEnd.setHours(endHour, endMinute, 0, 0);
-
-    // Create slots
-    let currentSlotStart = new Date(dayStart);
     
-    while (currentSlotStart < dayEnd) {
-      const slotEnd = addMinutes(currentSlotStart, preferences.blockLengthMinutes);
-      
-      if (slotEnd <= dayEnd) {
-        // Check if this slot conflicts with constraints
-        if (!hasConstraintConflict(currentSlotStart, slotEnd, preferences, currentDate)) {
-          const priority = calculateSlotPriority(currentSlotStart, preferences, timezone);
-          slots.push({
-            startAt: fromZonedTime(new Date(currentSlotStart), timezone),
-            endAt: fromZonedTime(new Date(slotEnd), timezone),
-            priority
-          });
+    if (availableBlocks.length > 0) {
+      // Use specific time blocks
+      for (const block of availableBlocks) {
+        const blockStart = new Date(currentDate);
+        const [startHour, startMinute] = block.startTime.split(':').map(Number);
+        blockStart.setHours(startHour, startMinute, 0, 0);
+        
+        const blockEnd = new Date(currentDate);
+        const [endHour, endMinute] = block.endTime.split(':').map(Number);
+        blockEnd.setHours(endHour, endMinute, 0, 0);
+        
+        // Create slots within this time block
+        let currentSlotStart = new Date(blockStart);
+        
+        while (currentSlotStart < blockEnd) {
+          const slotEnd = addMinutes(currentSlotStart, preferences.blockLengthMinutes);
+          
+          if (slotEnd <= blockEnd) {
+            // Check if this slot conflicts with constraints
+            if (!hasConstraintConflict(currentSlotStart, slotEnd, preferences, currentDate)) {
+              const priority = calculateSlotPriority(currentSlotStart, preferences, timezone);
+              slots.push({
+                startAt: fromZonedTime(new Date(currentSlotStart), timezone),
+                endAt: fromZonedTime(new Date(slotEnd), timezone),
+                priority
+              });
+            }
+          }
+          
+          currentSlotStart = addMinutes(currentSlotStart, preferences.blockLengthMinutes + preferences.breakLengthMinutes);
         }
       }
+    } else {
+      // Fallback to weekly schedule if no specific blocks
+      const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const dayName = dayNames[currentDate.getDay()];
+      const daySchedule = preferences.weeklySchedule[dayName];
+
+      if (!daySchedule || !daySchedule.isAvailable) continue;
+
+      // Create time slots for this day
+      const dayStart = new Date(currentDate);
+      const [startHour, startMinute] = daySchedule.startTime.split(':').map(Number);
+      dayStart.setHours(startHour, startMinute, 0, 0);
+
+      const dayEnd = new Date(currentDate);
+      const [endHour, endMinute] = daySchedule.endTime.split(':').map(Number);
+      dayEnd.setHours(endHour, endMinute, 0, 0);
+
+      // Create slots
+      let currentSlotStart = new Date(dayStart);
       
-      currentSlotStart = addMinutes(currentSlotStart, preferences.blockLengthMinutes + preferences.breakLengthMinutes);
+      while (currentSlotStart < dayEnd) {
+        const slotEnd = addMinutes(currentSlotStart, preferences.blockLengthMinutes);
+        
+        if (slotEnd <= dayEnd) {
+          // Check if this slot conflicts with constraints
+          if (!hasConstraintConflict(currentSlotStart, slotEnd, preferences, currentDate)) {
+            const priority = calculateSlotPriority(currentSlotStart, preferences, timezone);
+            slots.push({
+              startAt: fromZonedTime(new Date(currentSlotStart), timezone),
+              endAt: fromZonedTime(new Date(slotEnd), timezone),
+              priority
+            });
+          }
+        }
+        
+        currentSlotStart = addMinutes(currentSlotStart, preferences.blockLengthMinutes + preferences.breakLengthMinutes);
+      }
     }
   }
 

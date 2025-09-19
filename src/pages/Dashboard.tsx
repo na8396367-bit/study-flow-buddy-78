@@ -87,31 +87,24 @@ export default function Dashboard() {
   };
 
   const generateScheduleWithTasks = (tasksToSchedule: Task[], pomodoroOverride?: boolean) => {
-    // Convert available blocks to weekly schedule
+    // Create base schedule with no availability
     const baseSchedule = {
-      monday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
-      tuesday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
-      wednesday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
-      thursday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
-      friday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
-      saturday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
-      sunday: { isAvailable: true, startTime: '09:00', endTime: '17:00', mealBreaks: [] }
+      monday: { isAvailable: false, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+      tuesday: { isAvailable: false, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+      wednesday: { isAvailable: false, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+      thursday: { isAvailable: false, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+      friday: { isAvailable: false, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+      saturday: { isAvailable: false, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
+      sunday: { isAvailable: false, startTime: '09:00', endTime: '17:00', mealBreaks: [] }
     };
 
-    // Override with available blocks if they exist
-    if (availableBlocks.length > 0) {
-      const earliestStart = availableBlocks.reduce((earliest, block) => 
-        block.startTime < earliest ? block.startTime : earliest, '23:59'
-      );
-      const latestEnd = availableBlocks.reduce((latest, block) => 
-        block.endTime > latest ? block.endTime : latest, '00:00'
-      );
-      
+    // If no available blocks defined, use default 9-5 schedule
+    if (availableBlocks.length === 0) {
       Object.keys(baseSchedule).forEach(day => {
         baseSchedule[day] = {
           isAvailable: true,
-          startTime: earliestStart,
-          endTime: latestEnd,
+          startTime: '09:00',
+          endTime: '17:00',
           mealBreaks: []
         };
       });
@@ -123,7 +116,8 @@ export default function Dashboard() {
       ...userPreferences,
       weeklySchedule: baseSchedule,
       blockLengthMinutes: sessionLength,
-      breakLengthMinutes: currentPomodoroState ? breakLength : 0
+      breakLengthMinutes: currentPomodoroState ? breakLength : 0,
+      availableTimeBlocks: availableBlocks // Pass the specific time blocks to the scheduler
     };
 
     const result = generateIntelligentSchedule(tasksToSchedule, updatedPreferences, 7);
