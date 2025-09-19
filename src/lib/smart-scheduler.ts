@@ -401,32 +401,55 @@ function getMaxSessionsPerDay(taskType: Task['type'], difficulty: number): numbe
 function mergeAdjacentTaskSessions(sessions: PlanSession[]): PlanSession[] {
   if (sessions.length === 0) return sessions;
   
-  const mergedSessions: PlanSession[] = [];
-  let currentSession = { ...sessions[0] };
+  const taskSessions = sessions.filter(s => s.type === 'task');
+  const nonTaskSessions = sessions.filter(s => s.type !== 'task');
   
-  for (let i = 1; i < sessions.length; i++) {
-    const nextSession = sessions[i];
-    
-    // Check if sessions are adjacent and for the same task
-    const timeDifference = nextSession.startAt.getTime() - currentSession.endAt.getTime();
-    const isAdjacent = timeDifference <= 60000; // Within 1 minute (allows for small gaps)
-    const isSameTask = currentSession.taskId === nextSession.taskId && currentSession.type === 'task' && nextSession.type === 'task';
-    
-    if (isAdjacent && isSameTask) {
-      // Merge sessions by extending the end time
-      currentSession.endAt = new Date(nextSession.endAt);
-      currentSession.id = `${currentSession.taskId}-merged-${mergedSessions.length}`;
-    } else {
-      // Save current session and start a new one
-      mergedSessions.push(currentSession);
-      currentSession = { ...nextSession };
+  // Group task sessions by taskId
+  const sessionsByTask = taskSessions.reduce((groups, session) => {
+    if (!groups[session.taskId]) {
+      groups[session.taskId] = [];
     }
-  }
+    groups[session.taskId].push(session);
+    return groups;
+  }, {} as Record<string, PlanSession[]>);
   
-  // Add the last session
-  mergedSessions.push(currentSession);
+  const mergedSessions: PlanSession[] = [];
   
-  return mergedSessions;
+  // Merge sessions for each task
+  Object.values(sessionsByTask).forEach(taskSessions => {
+    if (taskSessions.length === 0) return;
+    
+    // Sort sessions by start time
+    const sortedSessions = taskSessions.sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
+    
+    let currentMergedSession = { ...sortedSessions[0] };
+    
+    for (let i = 1; i < sortedSessions.length; i++) {
+      const nextSession = sortedSessions[i];
+      
+      // Check if this session should be merged with the current one
+      // We merge if it's the same task and within the same day (no other tasks in between)
+      const timeDifference = nextSession.startAt.getTime() - currentMergedSession.endAt.getTime();
+      const withinReasonableGap = timeDifference <= 60 * 60 * 1000; // Within 1 hour (allows for break gaps)
+      
+      if (withinReasonableGap) {
+        // Merge by extending the end time
+        currentMergedSession.endAt = new Date(nextSession.endAt);
+        currentMergedSession.id = `${currentMergedSession.taskId}-merged-${mergedSessions.length}`;
+      } else {
+        // Save current merged session and start a new one
+        mergedSessions.push(currentMergedSession);
+        currentMergedSession = { ...nextSession };
+      }
+    }
+    
+    // Add the last merged session
+    mergedSessions.push(currentMergedSession);
+  });
+  
+  // Combine merged task sessions with non-task sessions and sort by time
+  const allSessions = [...mergedSessions, ...nonTaskSessions];
+  return allSessions.sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
 }
 
 function addOptimalBreaks(sessions: PlanSession[], preferences: EnhancedUserPreferences): PlanSession[] {
