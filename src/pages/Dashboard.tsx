@@ -36,7 +36,7 @@ export default function Dashboard() {
     { id: '1', startTime: '09:00', endTime: '12:00', label: 'Morning' },
     { id: '2', startTime: '14:00', endTime: '17:00', label: 'Afternoon' }
   ]);
-  const [pomodoroEnabled, setPomodoroEnabled] = useState(true);
+  const [pomodoroEnabled, setPomodoroEnabled] = useState(false);
   const [sessionLength, setSessionLength] = useState(45);
   const [breakLength, setBreakLength] = useState(15);
 
@@ -120,8 +120,6 @@ export default function Dashboard() {
       blockLengthMinutes: sessionLength,
       breakLengthMinutes: pomodoroEnabled ? breakLength : 0
     };
-    
-    console.log('Pomodoro Debug:', { pomodoroEnabled, breakLength, breakLengthMinutes: updatedPreferences.breakLengthMinutes });
 
     const result = generateIntelligentSchedule(tasksToSchedule, updatedPreferences, 7);
     setSessions(result.sessions);

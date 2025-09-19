@@ -433,11 +433,8 @@ function addOptimalBreaks(sessions: PlanSession[], preferences: EnhancedUserPref
   const allBlocks: PlanSession[] = [];
   const sortedSessions = [...sessions].sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
   
-  console.log('Break Logic Debug:', { breakLengthMinutes: preferences.breakLengthMinutes, sessionCount: sortedSessions.length });
-  
   // If Pomodoro is disabled (breakLengthMinutes = 0), merge adjacent task sessions
   if (preferences.breakLengthMinutes === 0) {
-    console.log('Merging sessions (no breaks)');
     return mergeAdjacentTaskSessions(sortedSessions);
   }
   
