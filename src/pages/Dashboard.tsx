@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Task, Course, PlanSession, UserPreferences, AvailabilityWindow } from "@/types";
 import { TaskCard } from "@/components/TaskCard";
 import { SequentialTaskForm } from "@/components/SequentialTaskForm";
@@ -25,6 +26,7 @@ interface TimeBlock {
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [sessions, setSessions] = useState<PlanSession[]>([]);
@@ -190,9 +192,12 @@ export default function Dashboard() {
         {/* Enhanced header with gradient and glass effect */}
         <div className="border-b border-blue-200/30 backdrop-blur-sm bg-white/40 px-6 py-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-normal bg-gradient-to-br from-slate-700 via-blue-800 to-cyan-700 bg-clip-text text-transparent font-dm-serif">
+            <button 
+              onClick={() => navigate('/')}
+              className="text-2xl font-normal bg-gradient-to-br from-slate-700 via-blue-800 to-cyan-700 bg-clip-text text-transparent font-dm-serif hover:scale-105 transition-transform duration-200 cursor-pointer"
+            >
               Clarity
-            </h1>
+            </button>
             <Button 
               onClick={() => setShowAddTask(true)} 
               className="bg-gradient-to-r from-blue-400 via-sky-500 to-cyan-400 hover:from-blue-500 hover:via-sky-600 hover:to-cyan-500 text-white shadow-lg hover:shadow-blue-300/25 hover:scale-105 transform transition-all duration-300 ease-out font-medium rounded-full px-6 border-0"
