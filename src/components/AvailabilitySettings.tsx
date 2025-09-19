@@ -6,6 +6,14 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { X, Plus, Coffee, UtensilsCrossed } from "lucide-react";
 
+// Helper function to format 24-hour time to 12-hour AM/PM format
+const formatTimeToAmPm = (time24: string): string => {
+  const [hours, minutes] = time24.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+  return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+};
+
 interface TimeBlock {
   id: string;
   startTime: string;
@@ -94,7 +102,7 @@ export function AvailabilitySettings({
           <div className="flex flex-wrap gap-2 mb-4">
             {availableBlocks.map((block) => (
               <Badge key={block.id} variant="secondary" className="flex items-center gap-2 py-1 px-3">
-                <span>{block.startTime} - {block.endTime}</span>
+                <span>{formatTimeToAmPm(block.startTime)} - {formatTimeToAmPm(block.endTime)}</span>
                 <button
                   onClick={() => removeTimeBlock(block.id)}
                   className="hover:bg-destructive/20 rounded-full p-0.5"

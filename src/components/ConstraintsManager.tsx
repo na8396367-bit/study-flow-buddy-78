@@ -9,6 +9,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Calendar } from "lucide-react";
 
+// Helper function to format 24-hour time to 12-hour AM/PM format
+const formatTimeToAmPm = (time24: string): string => {
+  const [hours, minutes] = time24.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+  return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+};
+
 interface ConstraintsManagerProps {
   constraints: TimeConstraint[];
   onUpdate: (constraints: TimeConstraint[]) => void;
@@ -107,7 +115,7 @@ export function ConstraintsManager({ constraints, onUpdate }: ConstraintsManager
                   <div>
                     <p className="font-medium text-sm">{constraint.label}</p>
                     <p className="text-xs text-muted-foreground">
-                      {constraint.startTime} - {constraint.endTime}
+                      {formatTimeToAmPm(constraint.startTime)} - {formatTimeToAmPm(constraint.endTime)}
                       {constraint.isRecurring && (
                         <span className="ml-2">
                           {constraint.days.length === 7 ? 'Daily' : 
