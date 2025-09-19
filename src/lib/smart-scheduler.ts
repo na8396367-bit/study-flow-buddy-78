@@ -123,8 +123,8 @@ function generateAvailableTimeSlots(
             if (!hasConstraintConflict(currentSlotStart, slotEnd, preferences, currentDate)) {
               const priority = calculateSlotPriority(currentSlotStart, preferences, timezone);
               slots.push({
-                startAt: fromZonedTime(new Date(currentSlotStart), timezone),
-                endAt: fromZonedTime(new Date(slotEnd), timezone),
+                startAt: new Date(currentSlotStart),
+                endAt: new Date(slotEnd),
                 priority
               });
             }
@@ -161,8 +161,8 @@ function generateAvailableTimeSlots(
           if (!hasConstraintConflict(currentSlotStart, slotEnd, preferences, currentDate)) {
             const priority = calculateSlotPriority(currentSlotStart, preferences, timezone);
             slots.push({
-              startAt: fromZonedTime(new Date(currentSlotStart), timezone),
-              endAt: fromZonedTime(new Date(slotEnd), timezone),
+              startAt: new Date(currentSlotStart),
+              endAt: new Date(slotEnd),
               priority
             });
           }
@@ -173,6 +173,11 @@ function generateAvailableTimeSlots(
     }
   }
 
+  console.log('Total slots created:', slots.length);
+  if (slots.length > 0) {
+    console.log('First slot starts at:', format(slots[0].startAt, 'yyyy-MM-dd HH:mm'));
+    console.log('Last slot starts at:', format(slots[slots.length - 1].startAt, 'yyyy-MM-dd HH:mm'));
+  }
   return slots.sort((a, b) => b.priority - a.priority);
 }
 
@@ -322,6 +327,7 @@ function allocateTaskSessions(
   const maxSessionsPerDay = getMaxSessionsPerDay(task.type, task.difficulty);
   
   for (const slot of availableSlots) {
+    console.log('Checking slot for task allocation:', format(slot.startAt, 'yyyy-MM-dd HH:mm'), 'to', format(slot.endAt, 'yyyy-MM-dd HH:mm'));
     if (remainingMinutes <= 0) break;
     if (isAfter(slot.startAt, task.dueAt)) continue;
     
@@ -344,6 +350,7 @@ function allocateTaskSessions(
     const sessionEnd = addMinutes(slot.startAt, sessionDuration);
     
     if (sessionEnd <= slot.endAt) {
+      console.log('Allocating session for task:', task.title, 'from', format(slot.startAt, 'HH:mm'), 'to', format(sessionEnd, 'HH:mm'));
       sessions.push({
         id: `${task.id}-${sessions.length}`,
         taskId: task.id,
