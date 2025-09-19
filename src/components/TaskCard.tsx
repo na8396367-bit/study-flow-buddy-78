@@ -32,13 +32,7 @@ export function TaskCard({ task, course, onComplete }: TaskCardProps) {
 
   return (
     <div className="group p-3 hover:bg-muted/50 rounded-lg transition-colors cursor-pointer">
-      <div className="flex items-start gap-3">
-        {/* Color indicator */}
-        <div 
-          className="w-3 h-3 rounded-full flex-shrink-0 mt-0.5"
-          style={{ backgroundColor: course.color }}
-        />
-        
+      <div className="flex items-start gap-3">        
         {/* Task content */}
         <div className="flex-1 min-w-0">
           {/* Title row with priority */}
