@@ -173,17 +173,29 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto">
-        {/* Google Calendar style header */}
-        <div className="border-b border-border px-6 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50 relative overflow-hidden">
+      {/* Background pattern matching home page */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-tr from-blue-200/20 via-sky-200/10 to-cyan-200/20"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/30 via-transparent to-transparent"></div>
+      </div>
+      
+      {/* Subtle floating orbs for ambient feel */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-32 right-40 w-64 h-64 bg-gradient-to-br from-blue-200/20 to-sky-300/15 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-40 left-32 w-72 h-72 bg-gradient-to-br from-cyan-200/15 to-sky-200/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+      </div>
+      
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Enhanced header with gradient and glass effect */}
+        <div className="border-b border-blue-200/30 backdrop-blur-sm bg-white/40 px-6 py-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-normal text-foreground font-dm-serif">
+            <h1 className="text-2xl font-normal bg-gradient-to-br from-slate-700 via-blue-800 to-cyan-700 bg-clip-text text-transparent font-dm-serif">
               Clarity
             </h1>
             <Button 
               onClick={() => setShowAddTask(true)} 
-              className="bg-primary hover:bg-primary-hover text-primary-foreground font-medium rounded-full px-6"
+              className="bg-gradient-to-r from-blue-400 via-sky-500 to-cyan-400 hover:from-blue-500 hover:via-sky-600 hover:to-cyan-500 text-white shadow-lg hover:shadow-blue-300/25 hover:scale-105 transform transition-all duration-300 ease-out font-medium rounded-full px-6 border-0"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create
@@ -192,11 +204,11 @@ export default function Dashboard() {
         </div>
 
         <div className="flex">
-          {/* Sidebar for tasks */}
-          <div className="w-80 border-r border-border h-screen overflow-y-auto">
+          {/* Enhanced sidebar with glass effect */}
+          <div className="w-80 border-r border-blue-200/30 backdrop-blur-sm bg-white/30 h-screen overflow-y-auto">
             <div className="p-6">
               <div className="mb-6">
-                <h2 className="text-lg font-medium text-foreground mb-4">Tasks</h2>
+                <h2 className="text-lg font-medium bg-gradient-to-r from-slate-700 to-blue-800 bg-clip-text text-transparent mb-4">Tasks</h2>
                 <div className="space-y-2">
                   {openTasks.map(task => {
                     const course = courses.find(c => c.id === task.courseId) || {
