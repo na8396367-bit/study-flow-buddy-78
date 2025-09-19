@@ -86,7 +86,7 @@ export default function Dashboard() {
     ));
   };
 
-  const generateScheduleWithTasks = (tasksToSchedule: Task[], pomodoroOverride?: boolean) => {
+  const generateScheduleWithTasks = (tasksToSchedule: Task[], pomodoroOverride?: boolean, blocksOverride?: TimeBlock[]) => {
     // Create base schedule with no availability
     const baseSchedule = {
       monday: { isAvailable: false, startTime: '09:00', endTime: '17:00', mealBreaks: [] },
@@ -112,12 +112,14 @@ export default function Dashboard() {
 
     const currentPomodoroState = pomodoroOverride !== undefined ? pomodoroOverride : pomodoroEnabled;
     
+    const currentBlocks = blocksOverride || availableBlocks;
+    
     const updatedPreferences = {
       ...userPreferences,
       weeklySchedule: baseSchedule,
       blockLengthMinutes: sessionLength,
       breakLengthMinutes: currentPomodoroState ? breakLength : 0,
-      availableTimeBlocks: availableBlocks // Pass the specific time blocks to the scheduler
+      availableTimeBlocks: currentBlocks // Pass the specific time blocks to the scheduler
     };
 
     const result = generateIntelligentSchedule(tasksToSchedule, updatedPreferences, 7);
@@ -142,10 +144,9 @@ export default function Dashboard() {
     setAvailableBlocks(blocks);
     // Always regenerate schedule when time blocks change, if there are tasks
     if (tasks.length > 0) {
-      setTimeout(() => {
-        generateScheduleWithTasks(tasks);
-        setHasGeneratedPlan(true);
-      }, 100);
+      // Pass the new blocks directly to avoid race condition
+      generateScheduleWithTasks(tasks, undefined, blocks);
+      setHasGeneratedPlan(true);
     }
   };
 
