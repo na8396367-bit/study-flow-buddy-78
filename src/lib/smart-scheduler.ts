@@ -398,13 +398,44 @@ function getMaxSessionsPerDay(taskType: Task['type'], difficulty: number): numbe
   return maxSessions;
 }
 
+function mergeAdjacentTaskSessions(sessions: PlanSession[]): PlanSession[] {
+  if (sessions.length === 0) return sessions;
+  
+  const mergedSessions: PlanSession[] = [];
+  let currentSession = { ...sessions[0] };
+  
+  for (let i = 1; i < sessions.length; i++) {
+    const nextSession = sessions[i];
+    
+    // Check if sessions are adjacent and for the same task
+    const timeDifference = nextSession.startAt.getTime() - currentSession.endAt.getTime();
+    const isAdjacent = timeDifference <= 60000; // Within 1 minute (allows for small gaps)
+    const isSameTask = currentSession.taskId === nextSession.taskId && currentSession.type === 'task' && nextSession.type === 'task';
+    
+    if (isAdjacent && isSameTask) {
+      // Merge sessions by extending the end time
+      currentSession.endAt = new Date(nextSession.endAt);
+      currentSession.id = `${currentSession.taskId}-merged-${mergedSessions.length}`;
+    } else {
+      // Save current session and start a new one
+      mergedSessions.push(currentSession);
+      currentSession = { ...nextSession };
+    }
+  }
+  
+  // Add the last session
+  mergedSessions.push(currentSession);
+  
+  return mergedSessions;
+}
+
 function addOptimalBreaks(sessions: PlanSession[], preferences: EnhancedUserPreferences): PlanSession[] {
   const allBlocks: PlanSession[] = [];
   const sortedSessions = [...sessions].sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
   
-  // Don't add breaks if Pomodoro is disabled (breakLengthMinutes = 0)
+  // If Pomodoro is disabled (breakLengthMinutes = 0), merge adjacent task sessions
   if (preferences.breakLengthMinutes === 0) {
-    return sortedSessions;
+    return mergeAdjacentTaskSessions(sortedSessions);
   }
   
   for (let i = 0; i < sortedSessions.length; i++) {
